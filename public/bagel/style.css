@@ -1,0 +1,35 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    display: grid;
+    place-content: center;
+}
+
+#bagel {
+    scale: 0%;
+    animation: zoom 300s ease-in 30s alternate infinite;
+}
+
+@keyframes zoom {
+    0% {
+        scale: 0%;
+    }
+
+    100% {
+        scale: 100%;
+    }
+}
+
+@keyframes spin {
+    0% {
+        rotate: 0deg;
+    }
+
+    100% {
+        rotate: 360deg;
+    }
+}
