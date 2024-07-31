@@ -1,0 +1,32 @@
+@import url('/global/fontawesome/css/all.min.css');
+
+html, body, main {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	background-color: #1d1e20;
+}
+
+main {
+	/* padding: 1em; */
+	box-sizing: border-box;
+	display: grid;
+	place-items: center;
+}
+
+#pause-button {
+	position: fixed;
+	font-size: 1.5em;
+	top: 15px;
+	left: 15px;
+	padding: 5px;
+	border: none;
+	background: none;
+	color: rgba(255, 255, 255, 0.84);
+	outline: none;
+}
+
+#pause-button:hover {
+	cursor: pointer;
+}

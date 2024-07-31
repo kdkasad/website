@@ -1,0 +1,22 @@
+html, body, main#container {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	background-color: #1d1e20;
+}
+
+main#container {
+	display: grid;
+	place-items: center;
+}
+
+#pause-button {
+	position: fixed;
+	top: 15px;
+	left: 15px;
+	background: none;
+	border: none;
+	color: rgba(255, 255, 255, 0.84);
+	padding: 5px;
+}

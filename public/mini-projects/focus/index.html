@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang=en>
+	<head>
+		<meta charset="utf-8">
+
+		<title>Page focus tester</title>
+
+		<meta name="author" content="Kian Kasad">
+		<meta name="description" content="Test what actions lose the page's focus">
+		<meta name="theme-color" content="#1d1e20" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link rel="icon" href="/global/images/icon.svg" type="image/svg+xml" />
+		<link rel="stylesheet" href="/global/style/colors.css" />
+		<link rel="stylesheet" href="style.css" />
+		<script defer src="script.js"></script>
+	</head>
+
+	<body>
+		<div id="help-btn" class="button">
+			help
+		</div>
+
+		<div id="help-modal">
+			<div class="modal-content">
+				<div class="modal-close button">&times;</div>
+				<span>
+					<p>
+					In the center of the page, there is a list of different
+					mechanisms which sites can use for detecting focus. They
+					turn <span class="text-color-red">red</span> when that
+					mechanism has detected a loss of focus and <span
+					class="text-color-green">green</span> when the mechanism
+					detects that you are focused on the page.
+					</p>
+					<p>
+					For example, when the <b><i>mouse</i></b> mechanism turns <span
+					class="text-color-red">red</span>, the site has detected
+					your mouse cursor leaving the page.
+					</p>
+					<p>
+					If any are <span class="text-color-red">red</span>, a site
+					could be able to detect that whatever you are doing is
+					outside the page. If multiple mechanisms are <span
+					class="text-color-red">red</span>, then it's very likely
+					that a site could detect a loss of focus.
+					</p>
+					<p>
+					Sites may also use other mechanisms which are not listed
+					here. Because of this, even if all the mechanisms in the
+					list are <span class="text-color-green">green</span>, a
+					site could still detect a loss of focus.
+					</p>
+				</span>
+			</div>
+		</div>
+
+		<ul id=list>
+			<li id="blur-focus">blur/focus</li>
+			<li id="mouse">mouse</li>
+		</ul>
+	</body>
+</html>

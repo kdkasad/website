@@ -1,0 +1,7 @@
+There's a new winner of
+<https://kasad.com/projects/tictactoe/>.
+
+Their name is: %name%
+
+--
+From the kasad.com web server
