@@ -5,5 +5,11 @@
 		"Astro": {
 			"language_servers": ["eslint", "..."]
 		}
+	},
+	"formatter": {
+		"external": {
+		   	"command": "bun",
+		   	"arguments": ["run", "prettier", "--stdin-filepath", "{buffer_path}"]
+		}
 	}
 }

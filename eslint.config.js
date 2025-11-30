@@ -7,7 +7,7 @@ import eslintConfigPrettier from "eslint-config-prettier";
 export default defineConfig(
   // Ignore generated files & dependencies
   {
-    ignores: ["dist/", "node_modules/", ".astro/"],
+    ignores: ["dist/", "node_modules/", ".astro/", ".prettierrc.mjs"],
   },
 
   // Base JS
