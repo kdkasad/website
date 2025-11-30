@@ -1,15 +1,20 @@
 {
-	"tab_size": 4,
-	"hard_tabs": false,
-	"languages": {
-		"Astro": {
-			"language_servers": ["eslint", "..."]
-		}
-	},
-	"formatter": {
-		"external": {
-		   	"command": "bun",
-		   	"arguments": ["run", "prettier", "--stdin-filepath", "{buffer_path}"]
-		}
-	}
+    "tab_size": 4,
+    "hard_tabs": false,
+    "languages": {
+        "Astro": {
+            "language_servers": ["eslint", "..."]
+        }
+    },
+    "formatter": {
+        "external": {
+            "command": "bun",
+            "arguments": [
+                "run",
+                "prettier",
+                "--stdin-filepath",
+                "{buffer_path}"
+            ]
+        }
+    }
 }
