@@ -1,5 +1,9 @@
 ---
-
+type NavItem = { path: string; name: string };
+const navItems: NavItem[] = [
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog" },
+];
 ---
 
 <header class="w-full">
@@ -12,10 +16,17 @@
         <!-- Navigation menu -->
         <div class="text-sm text-gray-700">
             <menu class="hidden flex-row gap-4 sm:flex">
-                <li>About</li>
-                <li>Blog</li>
-                <li>Projects</li>
-                <li>Work</li>
+                {
+                    navItems.map(({ path, name }) => (
+                        <li
+                            class={
+                                Astro.url.pathname === path ? "font-bold" : ""
+                            }
+                        >
+                            <a href={path}>{name}</a>
+                        </li>
+                    ))
+                }
             </menu>
         </div>
     </div>

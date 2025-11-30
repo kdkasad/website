@@ -1,19 +1,16 @@
 @import "tailwindcss";
 
-/* For light mode */
 @theme {
     --color-purdue: #8e6f3e;
+    --color-accent: color-mix(
+        in oklab,
+        var(--color-emerald-700) 80%,
+        transparent
+    );
 }
 
-/* For dark mode */
-@layer theme {
-    /*:root,
-    :host {
-        @variant dark {
-            --color-purdue: #cfb991;
-        }
-    }*/
-    .dark {
-        --color-purdue: #cfb991;
+@layer base {
+    body {
+        @apply bg-stone-100 text-stone-900;
     }
 }

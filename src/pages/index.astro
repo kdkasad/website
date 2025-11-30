@@ -3,41 +3,53 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactIcons from "../components/ContactIcons.astro";
 import WebringLinks from "../components/WebringLinks.astro";
 import ProfilePicture from "../components/ProfilePicture.astro";
+import Affiliations from "../components/Affiliations.astro";
+import PageSEO from "../components/PageSEO.astro";
+
+const headingStyle =
+    "decoration-accent mb-4 text-3xl font-black underline tracking-tight";
 ---
 
 <BaseLayout>
-    <main class="mx-auto max-w-screen-xl md:px-16 lg:px-24">
-        <div
-            class="flex items-start justify-between gap-8 sm:flex-row md:items-center lg:gap-32"
-        >
-            <!-- Left: Name plate & links -->
+    <PageSEO slot="head" title="Portfolio | Kian Kasad" />
+
+    <main class="mx-auto max-w-screen-2xl sm:px-8 md:px-16">
+        <!-- Nameplate & about me section -->
+        {
+            /* Stacks vertically when screen is small; side-by-side when screen is large */
+        }
+        <div class="lg:flex lg:flex-row lg:justify-around lg:gap-24">
             <div class="flex-initial">
-                <div class="drop-shadow-lg">
-                    <div class="text-xl font-bold">Hi, I'm</div>
-                    <h1 class="mb-4 text-8xl font-black">
+                <div class="text-xl font-bold">Hi, I'm</div>
+                <div
+                    class="flex flex-row items-center justify-between gap-4 sm:gap-8 md:gap-16 lg:justify-start"
+                >
+                    <!-- Left: Name plate & links -->
+                    <div class="drop-shadow-lg">
                         <div
-                            class="inline-block size-20 translate-y-1.5 align-baseline sm:hidden"
+                            class="mb-4 text-6xl font-black tracking-tight sm:text-8xl"
                         >
-                            <ProfilePicture border={2} />
+                            Kian<br />Kasad<span class="text-accent">.</span>
                         </div>
-                        Kian Kasad.
-                    </h1>
-                    <div class="text-purdue text-3xl font-bold">
-                        CS @ Purdue
+                    </div>
+
+                    <!-- Right: profile picture -->
+                    <div
+                        class="box-content size-30 sm:size-40 md:size-56 lg:size-auto lg:max-w-56 lg:min-w-30"
+                    >
+                        <ProfilePicture />
                     </div>
                 </div>
-
-                <div class="flex flex-row justify-between drop-shadow-sm">
+                <div class="mt-8 flex flex-row justify-between drop-shadow-sm">
                     <ContactIcons />
                     <WebringLinks />
                 </div>
             </div>
 
-            <!-- Right: profile picture -->
-            <div
-                class="box-content hidden size-40 pt-16 sm:block md:size-56 md:pt-0"
-            >
-                <ProfilePicture />
+            <!-- About me -->
+            <div class="mt-24 flex-initial text-2xl lg:mt-18 lg:max-w-sm">
+                <h1 class={headingStyle}>About me</h1>
+                <Affiliations />
             </div>
         </div>
     </main>
