@@ -30,4 +30,23 @@ export default defineConfig(
 
     // Disable rules that conflict with Prettier
     eslintConfigPrettier,
+
+    // Workaround for TypeScript not knowing the type of Astro elements/components
+    {
+        files: ["**/*.astro"],
+        rules: {
+            "@typescript-eslint/no-unsafe-return": "off",
+            "@typescript-eslint/restrict-template-expressions": [
+                "warn",
+                {
+                    allowAny: false,
+                    allowBoolean: false,
+                    allowNever: false,
+                    allowNullish: false,
+                    allowNumber: true,
+                    allowRegExp: false,
+                },
+            ],
+        },
+    },
 );

@@ -1,0 +1,26 @@
+---
+import { Image } from "astro:assets";
+
+const borderClasses = {
+    thin: "border-2",
+    thick: "border-8",
+};
+
+export interface Props {
+    border?: keyof typeof borderClasses;
+}
+
+const border = borderClasses[Astro.props.border ?? "thick"];
+---
+
+<div
+    class={`aspect-square size-full flex-none overflow-hidden rounded-full ${border} border-stone-600 shadow-lg`}
+>
+    {/* Placeholder until profile picture is ready */}
+    <Image
+        src="https://rustacean.net/assets/corro.svg"
+        inferSize={true}
+        alt="Profile picture"
+        class="h-full object-cover object-center"
+    />
+</div>

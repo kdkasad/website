@@ -1,0 +1,45 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface WebringLink {
+    path: string;
+    icon: string;
+    title: string;
+}
+
+const baseUrl = "https://ring.purduehackers.com";
+const entries: WebringLink[] = [
+    {
+        path: "/prev",
+        icon: "fa7-solid:angle-left",
+        title: "Previous site in Purdue Hackers webring",
+    },
+    {
+        path: "/",
+        icon: "purdue-hackers",
+        title: "Purdue Hackers webring",
+    },
+    {
+        path: "/next",
+        icon: "fa7-solid:angle-right",
+        title: "Next site in Purdue Hackers webring",
+    },
+];
+---
+
+<div class="mt-8 flex flex-row items-center gap-2">
+    {
+        entries.map((entry) => (
+            <a
+                href={baseUrl + entry.path}
+                title={entry.title}
+                class={`transition-opacity duration-200 hover:opacity-80`}
+            >
+                <Icon
+                    name={entry.icon}
+                    class={entry.path === "/" ? "size-8" : "size-6"}
+                />
+            </a>
+        ))
+    }
+</div>

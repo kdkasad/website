@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+/* For light mode */
+@theme {
+    --color-purdue: #8e6f3e;
+}
+
+/* For dark mode */
+@layer theme {
+    /*:root,
+    :host {
+        @variant dark {
+            --color-purdue: #cfb991;
+        }
+    }*/
+    .dark {
+        --color-purdue: #cfb991;
+    }
+}

@@ -1,0 +1,45 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface ContactIconEntry {
+    url: string;
+    icon: string;
+    alt: string;
+    title: string;
+}
+
+const entries: ContactIconEntry[] = [
+    {
+        url: "mailto:kian@kasad.com",
+        icon: "fa7-solid:envelope",
+        alt: "Email",
+        title: "Send Kian an email",
+    },
+    {
+        url: "https://github.com/kdkasad",
+        icon: "devicon:github",
+        alt: "GitHub",
+        title: "GitHub profile",
+    },
+    {
+        url: "https://linkedin.com/in/kiankasad",
+        icon: "devicon:linkedin",
+        alt: "LinkedIn",
+        title: "LinkedIn profile",
+    },
+];
+---
+
+<div class="mt-8 flex flex-row items-center gap-3">
+    {
+        entries.map((entry) => (
+            <a
+                href={entry.url}
+                title={entry.title}
+                class="size-8 transition-opacity duration-200 hover:opacity-80"
+            >
+                <Icon name={entry.icon} desc={entry.alt} class="size-8" />
+            </a>
+        ))
+    }
+</div>
