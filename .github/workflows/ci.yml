@@ -1,0 +1,78 @@
+name: CI
+
+on:
+    push: {}
+    pull_request: {}
+
+jobs:
+    eslint:
+        name: Lint code
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out sources
+              uses: actions/checkout@v6
+
+            - name: Set up Bun
+              uses: oven-sh/setup-bun@v2
+
+            - name: Cache dependencies
+              uses: actions/cache@v4
+              with:
+                  key: bun-global-cache-${{ hashFiles('bun.lock') }}-dev
+                  restore-keys: |
+                      bun-global-cache-${{ hashFiles('bun.lock') }}
+                  path: ~/.bun/install/cache
+
+            - name: Install dependencies
+              run: bun install
+
+            - name: Run ESLint
+              run: bun run check::lint
+
+    prettier:
+        name: Check formatting
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out sources
+              uses: actions/checkout@v6
+
+            - name: Set up Bun
+              uses: oven-sh/setup-bun@v2
+
+            - name: Cache dependencies
+              uses: actions/cache@v4
+              with:
+                  key: bun-global-cache-${{ hashFiles('bun.lock') }}-dev
+                  restore-keys: |
+                      bun-global-cache-${{ hashFiles('bun.lock') }}
+                  path: ~/.bun/install/cache
+
+            - name: Install dependencies
+              run: bun install
+
+            - name: Run Prettier
+              run: bun run check::fmt
+
+    build:
+        name: Build site
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out sources
+              uses: actions/checkout@v6
+
+            - name: Set up Bun
+              uses: oven-sh/setup-bun@v2
+
+            - name: Cache dependencies
+              uses: actions/cache@v4
+              with:
+                  key: bun-global-cache-${{ hashFiles('bun.lock') }}-dev
+                  restore-keys: |
+                      bun-global-cache-${{ hashFiles('bun.lock') }}
+                  path: ~/.bun/install/cache
+
+            - name: Install dependencies
+              run: bun install
+
+            - name: Build site
+              run: bun run build
