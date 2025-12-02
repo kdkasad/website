@@ -38,7 +38,7 @@ import { Icon } from "astro-icon/components";
         </div>
         <div class="flex flex-row items-center gap-8">
             <div class="flex-auto font-bold">
-                <a href="#github-calendar"> Open source developer </a>
+                <a href="#github-calendar" data-highlight="github-calendar"> Open source developer </a>
             </div>
             <div
                 class="text-secondary flex-initial text-right text-lg font-medium"
@@ -48,24 +48,3 @@ import { Icon } from "astro-icon/components";
         </div>
     </div>
 </div>
-
-<script>
-    const links = document.querySelectorAll(
-        "a[href='#github-calendar']",
-    ) satisfies NodeListOf<HTMLAnchorElement>;
-    const githubCalendar = document.getElementById("github-calendar");
-    links.forEach((link) => {
-        link.addEventListener("click", () => {
-            githubCalendar?.classList.replace(
-                "bg-transparent",
-                "bg-yellow-300",
-            );
-            setTimeout(() => {
-                githubCalendar?.classList.replace(
-                    "bg-yellow-300",
-                    "bg-transparent",
-                );
-            }, 1500);
-        });
-    });
-</script>

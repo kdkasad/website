@@ -10,6 +10,11 @@
     --color-primary: var(--color-stone-900);
     --color-secondary: var(--color-stone-400);
     --color-background: var(--color-stone-100);
+    --color-highlight: color-mix(
+        in oklab,
+        var(--color-yellow-400) 60%,
+        transparent
+    );
 
     --font-default-sans:
         ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
