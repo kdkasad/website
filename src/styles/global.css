@@ -10,4 +10,9 @@
     --color-primary: var(--color-stone-900);
     --color-secondary: var(--color-stone-400);
     --color-background: var(--color-stone-100);
+
+    --font-default-sans:
+        ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-sans: "Raleway Variable", var(--font-default-sans);
 }
