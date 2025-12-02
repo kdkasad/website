@@ -9,7 +9,7 @@ import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 
 const headingStyle =
-    "decoration-accent mb-4 text-3xl font-black underline tracking-tight decoration-4";
+    "decoration-accent mb-4 text-3xl font-black underline decoration-4";
 
 const headings = ["Projects", "Blog", "Work experience", "Other stuff"];
 ---
@@ -66,9 +66,9 @@ const headings = ["Projects", "Blog", "Work experience", "Other stuff"];
         </section>
 
         {/* Heading links */}
-        <aside class="bg-accent text-background mt-16 px-16 py-4 xl:mt-0">
+        <aside class="bg-accent text-background mt-16 p-8 sm:px-16 sm:py-4 xl:mt-0">
             <div
-                class="mx-auto flex w-full max-w-screen-xl flex-col gap-x-8 gap-y-2 sm:flex-row sm:flex-wrap sm:justify-between"
+                class="mx-auto flex w-full max-w-screen-xl flex-col gap-x-16 gap-y-4 sm:flex-row sm:flex-wrap sm:justify-between"
             >
                 {
                     headings.map((heading) => (
