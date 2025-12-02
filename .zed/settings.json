@@ -1,4 +1,10 @@
 {
+    "hard_tabs": false,
     "tab_size": 4,
-    "hard_tabs": false
+    "languages": {
+        "YAML": {
+            "tab_size": 2,
+            "formatter": "language_server"
+        }
+    }
 }
