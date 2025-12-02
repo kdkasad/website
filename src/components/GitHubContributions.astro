@@ -3,13 +3,13 @@ import { getGitHubContributionWeeks } from "../lib/githubContributions";
 
 function getColor(contributionCount: number) {
     if (contributionCount >= 20) {
-        return "bg-emerald-700/80 border-emerald-700";
+        return "bg-green-800 border-green-900";
     } else if (contributionCount >= 10) {
-        return "bg-emerald-500/80 border-emerald-500";
+        return "bg-green-700/80 border-green-700";
     } else if (contributionCount >= 5) {
-        return "bg-emerald-400/80 border-emerald-400";
+        return "bg-green-600/50 border-green-600/30";
     } else if (contributionCount >= 1) {
-        return "bg-emerald-300/80 border-emerald-300";
+        return "bg-green-500/30 border-green-600/20";
     } else {
         return "bg-stone-300/80 border-stone-300";
     }
@@ -38,7 +38,7 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
 
 <div
     id="github-calendar"
-    class="bg-transparent transition-colors duration-1000"
+    class="bg-transparent py-2 transition-colors duration-1000"
 >
     <div
         class="text-secondary flex h-8 flex-row items-end pl-8 font-mono text-lg"
@@ -46,9 +46,9 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
         {contributionInfo.totalContributions.toLocaleString()} commits total
     </div>
     <div
-        class="flex w-full flex-row-reverse overflow-x-auto [scrollbar-color:var(--color-stone-300)_transparent] hover:[scrollbar-color:var(--color-stone-400)_transparent]"
+        class="flex w-full flex-row-reverse overflow-x-auto py-1 [scrollbar-color:var(--color-stone-300)_transparent] hover:[scrollbar-color:var(--color-stone-400)_transparent]"
     >
-        <div class="flex w-fit flex-row gap-4 px-6 pb-8">
+        <div class="flex w-fit flex-row gap-4 px-6">
             <div
                 class="text-secondary rotate-180 text-center font-mono text-lg [writing-mode:vertical-rl]"
             >
@@ -61,7 +61,7 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
                             {week.map((day) =>
                                 day ? (
                                     <div
-                                        class={`size-6 rounded-md border shadow-sm transition-transform ease-out hover:scale-125 ${day ? getColor(day.contributionCount) : ""}`}
+                                        class={`size-6 rounded-md border shadow-sm transition-transform ease-out hover:scale-125 hover:border-2 ${day ? getColor(day.contributionCount) : ""}`}
                                         title={`${day.contributionCount} commits on ${dateFormatterWeekday.format(day.date)}`}
                                     />
                                 ) : (

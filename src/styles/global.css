@@ -4,7 +4,7 @@
     --color-purdue: #8e6f3e;
     --color-accent: color-mix(
         in oklab,
-        var(--color-emerald-700) 80%,
+        var(--color-green-700) 70%,
         transparent
     );
     --color-primary: var(--color-stone-900);
