@@ -10,6 +10,8 @@ import Header from "../components/Header.astro";
 
 const headingStyle =
     "decoration-accent mb-4 text-3xl font-black underline tracking-tight decoration-4";
+
+const headings = ["Projects", "Blog", "Work experience", "Other stuff"];
 ---
 
 <BaseLayout title="Portfolio | Kian Kasad">
@@ -52,15 +54,37 @@ const headingStyle =
             </header>
 
             {/* About me */}
-            <h1 class={headingStyle}>About me</h1>
             <section class="mt-24 flex-initial text-2xl xl:mt-0 xl:max-w-sm">
+                <h1 class={`${headingStyle} mb-4`}>About me</h1>
                 <Affiliations />
             </section>
         </div>
 
-        <section class="mt-24 flex-none">
+        {/* GitHub contributions */}
+        <section class="mt-16 flex-none xl:mt-0">
             <GitHubContributions />
         </section>
+
+        {/* Heading links */}
+        <aside class="bg-accent text-background mt-16 px-16 py-4 xl:mt-0">
+            <div
+                class="mx-auto flex w-full max-w-screen-xl flex-col gap-x-8 gap-y-2 sm:flex-row sm:flex-wrap sm:justify-between"
+            >
+                {
+                    headings.map((heading) => (
+                        <a
+                            href={`#${heading.toLowerCase().replaceAll(/[^a-z0-9]/g, "-")}`}
+                            class={
+                                headingStyle.replace("mb-4", "") +
+                                " decoration-green-900 text-shadow-green-900 text-shadow-2xs"
+                            }
+                        >
+                            {heading}
+                        </a>
+                    ))
+                }
+            </div>
+        </aside>
     </div>
 
     <Footer class="mt-24" />
