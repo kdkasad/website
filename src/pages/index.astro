@@ -22,12 +22,12 @@ const headingStyle =
             /* Stacks vertically when screen is small; side-by-side when screen is large */
         }
         <div
-            class="mx-auto mt-12 w-full px-8 md:px-16 lg:flex lg:flex-row lg:items-center lg:justify-evenly lg:gap-32"
+            class="mx-auto mt-12 w-full px-8 md:px-16 xl:flex xl:flex-row xl:items-center xl:justify-evenly xl:gap-32"
         >
             <header class="flex-initial">
                 <div class="text-xl font-bold">Hi, I'm</div>
                 <div
-                    class="flex flex-row items-center justify-between gap-2 sm:gap-8 md:gap-16 lg:justify-start"
+                    class="flex flex-row items-center justify-between gap-2 sm:gap-8 md:gap-16 xl:justify-start"
                 >
                     <!-- Left: Name plate & links -->
                     <div class="flex-2 drop-shadow-lg">
@@ -52,8 +52,8 @@ const headingStyle =
             </header>
 
             {/* About me */}
-            <section class="mt-24 flex-initial text-2xl lg:mt-0 lg:max-w-sm">
-                <h1 class={headingStyle}>About me</h1>
+            <h1 class={headingStyle}>About me</h1>
+            <section class="mt-24 flex-initial text-2xl xl:mt-0 xl:max-w-sm">
                 <Affiliations />
             </section>
         </div>
