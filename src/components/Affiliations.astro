@@ -5,7 +5,13 @@ import { Icon } from "astro-icon/components";
 <div>
     <div class="flex w-full flex-col items-stretch gap-6 leading-[1.15]">
         <div class="flex flex-row items-center gap-8">
-            <div class="text-purdue flex-auto font-bold">CS @ Purdue</div>
+            <div class="text-purdue flex-auto font-bold">
+                <abbr
+                    title="Computer Science"
+                    class="cursor-default no-underline decoration-dotted hover:underline"
+                    >CS</abbr
+                > @ Purdue
+            </div>
             <div class="flex-initial text-right text-base">2023&ndash;2027</div>
         </div>
         <div class="flex flex-row items-center gap-8">
@@ -28,3 +34,24 @@ import { Icon } from "astro-icon/components";
         </div>
     </div>
 </div>
+
+<script>
+    const links = document.querySelectorAll(
+        "a[href='#github-calendar']",
+    ) satisfies NodeListOf<HTMLAnchorElement>;
+    const githubCalendar = document.getElementById("github-calendar");
+    links.forEach((link) => {
+        link.addEventListener("click", () => {
+            githubCalendar?.classList.replace(
+                "bg-transparent",
+                "bg-yellow-300",
+            );
+            setTimeout(() => {
+                githubCalendar?.classList.replace(
+                    "bg-yellow-300",
+                    "bg-transparent",
+                );
+            }, 1500);
+        });
+    });
+</script>

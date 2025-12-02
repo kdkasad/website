@@ -7,10 +7,7 @@
         var(--color-emerald-700) 80%,
         transparent
     );
-}
-
-@layer base {
-    body {
-        @apply bg-stone-100 text-stone-900;
-    }
+    --color-primary: var(--color-stone-900);
+    --color-secondary: var(--color-stone-400);
+    --color-background: var(--color-stone-100);
 }

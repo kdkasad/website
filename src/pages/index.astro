@@ -4,28 +4,33 @@ import ContactIcons from "../components/ContactIcons.astro";
 import WebringLinks from "../components/WebringLinks.astro";
 import ProfilePicture from "../components/ProfilePicture.astro";
 import Affiliations from "../components/Affiliations.astro";
-import PageSEO from "../components/PageSEO.astro";
+import GitHubContributions from "../components/GitHubContributions.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
 
 const headingStyle =
     "decoration-accent mb-4 text-3xl font-black underline tracking-tight";
 ---
 
-<BaseLayout>
-    <PageSEO slot="head" title="Portfolio | Kian Kasad" />
+<BaseLayout title="Portfolio | Kian Kasad">
+    {/* Container for first screenful of content */}
+    <div class="flex min-h-screen flex-col justify-between">
+        <Header />
 
-    <main class="mx-auto max-w-screen-2xl sm:px-8 md:px-16">
-        <!-- Nameplate & about me section -->
         {
+            /* Nameplate & about me section */
             /* Stacks vertically when screen is small; side-by-side when screen is large */
         }
-        <div class="lg:flex lg:flex-row lg:justify-around lg:gap-24">
-            <div class="flex-initial">
+        <div
+            class="mx-auto mt-12 w-full px-8 md:px-16 lg:flex lg:flex-row lg:items-center lg:justify-evenly lg:gap-32"
+        >
+            <header class="flex-initial">
                 <div class="text-xl font-bold">Hi, I'm</div>
                 <div
-                    class="flex flex-row items-center justify-between gap-4 sm:gap-8 md:gap-16 lg:justify-start"
+                    class="flex flex-row items-center justify-between gap-2 sm:gap-8 md:gap-16 lg:justify-start"
                 >
                     <!-- Left: Name plate & links -->
-                    <div class="drop-shadow-lg">
+                    <div class="flex-2 drop-shadow-lg">
                         <div
                             class="mb-4 text-6xl font-black tracking-tight sm:text-8xl"
                         >
@@ -34,9 +39,7 @@ const headingStyle =
                     </div>
 
                     <!-- Right: profile picture -->
-                    <div
-                        class="box-content size-30 sm:size-40 md:size-56 lg:size-auto lg:max-w-56 lg:min-w-30"
-                    >
+                    <div class="box-content max-w-56 min-w-30 flex-1">
                         <ProfilePicture />
                     </div>
                 </div>
@@ -44,13 +47,19 @@ const headingStyle =
                     <ContactIcons />
                     <WebringLinks />
                 </div>
-            </div>
+            </header>
 
-            <!-- About me -->
-            <div class="mt-24 flex-initial text-2xl lg:mt-18 lg:max-w-sm">
+            {/* About me */}
+            <section class="mt-24 flex-initial text-2xl lg:mt-0 lg:max-w-sm">
                 <h1 class={headingStyle}>About me</h1>
                 <Affiliations />
-            </div>
+            </section>
         </div>
-    </main>
+
+        <section class="mt-24 flex-none">
+            <GitHubContributions />
+        </section>
+    </div>
+
+    <Footer class="mt-24" />
 </BaseLayout>

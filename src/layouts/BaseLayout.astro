@@ -1,22 +1,26 @@
 ---
-import Footer from "../components/Footer.astro";
-import Header from "../components/Header.astro";
 import "../styles/global.css";
+
+import PageSEO from "../components/PageSEO.astro";
+import { type Props as PageSEOProps } from "../components/PageSEO.astro";
+
+export interface Props extends PageSEOProps {
+    extraBodyClasses?: string;
+}
+
+const { extraBodyClasses = "", ...seoProps } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width" />
         <meta name="generator" content={Astro.generator} />
+        <PageSEO {...seoProps} />
         <slot name="head" />
     </head>
-    <body class="flex min-h-dvh flex-col">
-        <Header />
-        <div class="grow p-8">
-            <slot />
-        </div>
-        <Footer class="mt-24" />
+    <body class={`bg-background text-primary ${extraBodyClasses}`}>
+        <slot />
     </body>
 </html>

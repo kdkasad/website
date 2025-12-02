@@ -1,0 +1,82 @@
+---
+import { getGitHubContributionWeeks } from "../lib/githubContributions";
+
+function getColor(contributionCount: number) {
+    if (contributionCount >= 20) {
+        return "bg-emerald-700/80 border-emerald-700";
+    } else if (contributionCount >= 10) {
+        return "bg-emerald-500/80 border-emerald-500";
+    } else if (contributionCount >= 5) {
+        return "bg-emerald-400/80 border-emerald-400";
+    } else if (contributionCount >= 1) {
+        return "bg-emerald-300/80 border-emerald-300";
+    } else {
+        return "bg-stone-300/80 border-stone-300";
+    }
+}
+
+const contributionInfo = await getGitHubContributionWeeks(
+    "kdkasad",
+    new Date("2020-01-01"),
+);
+const firstDay = contributionInfo.weeks[0].find((day) => day !== null)!;
+const lastDay = contributionInfo.weeks.at(-1)!.at(-1)!;
+const dateFormatterWeekday = Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+});
+const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+});
+---
+
+<div
+    id="github-calendar"
+    class="bg-transparent transition-colors duration-1000"
+>
+    <div
+        class="text-secondary flex h-8 flex-row items-end pl-8 font-mono text-lg"
+    >
+        {contributionInfo.totalContributions.toLocaleString()} commits total
+    </div>
+    <div
+        class="flex w-full flex-row-reverse overflow-x-auto [scrollbar-color:var(--color-stone-300)_transparent] hover:[scrollbar-color:var(--color-stone-400)_transparent]"
+    >
+        <div class="flex w-fit flex-row gap-4 px-6 pb-8">
+            <div
+                class="text-secondary rotate-180 text-center font-mono text-lg [writing-mode:vertical-rl]"
+            >
+                {dateFormatterJustDate.format(firstDay.date)}
+            </div>
+            <div class="flex flex-row gap-1">
+                {
+                    contributionInfo.weeks.map((week) => (
+                        <div class="flex flex-col gap-1">
+                            {week.map((day) =>
+                                day ? (
+                                    <div
+                                        class={`size-6 rounded-md border shadow-sm transition-transform ease-out hover:scale-125 ${day ? getColor(day.contributionCount) : ""}`}
+                                        title={`${day.contributionCount} commits on ${dateFormatterWeekday.format(day.date)}`}
+                                    />
+                                ) : (
+                                    <div class="size-6" />
+                                ),
+                            )}
+                        </div>
+                    ))
+                }
+            </div>
+            <div
+                class="text-secondary text-center font-mono text-lg [writing-mode:vertical-rl]"
+            >
+                {dateFormatterJustDate.format(lastDay.date)}
+            </div>
+        </div>
+    </div>
+</div>
