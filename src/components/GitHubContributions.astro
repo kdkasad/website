@@ -49,18 +49,20 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
             >
                 {dateFormatterJustDate.format(firstDay.date)}
             </div>
-            <div class="flex flex-row gap-1">
+            <div class="gh-column-parent flex flex-row gap-1">
                 {
                     contributionInfo.weeks.map((week) => (
-                        <div class="column">
+                        <div>
                             {week.map((day) =>
                                 day ? (
                                     <div
-                                        class={`tile ${getTileColorClass(day.contributionCount)}`}
+                                        class={getTileColorClass(
+                                            day.contributionCount,
+                                        )}
                                         title={`${day.contributionCount} commits on ${dateFormatterWeekday.format(day.date)}`}
                                     />
                                 ) : (
-                                    <div class="size-6" />
+                                    <div class="empty-tile size-6" />
                                 ),
                             )}
                         </div>
@@ -76,34 +78,44 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
     </div>
 </div>
 
-<style>
+<!--
+Styles for this component are made global for size optimization of the resulting HTML.
+If we use Tailwind classes, each tile <div> becomes large because of the long class attribute.
+If we use component-scoped styles, it's much better (saves ~200 kB), but Astro
+still adds the data attribute to every element in the component for style scoping.
+By making the styles global, we remove the need for a long data attribute on every element in this component,
+thus resulting in ~270 kB of savings.
+-->
+<style is:global>
     @reference "../styles/global.css";
 
-    .column {
+    /* Calendar columns */
+    .gh-column-parent > div {
         @apply flex flex-col gap-1;
     }
 
-    .tile {
+    /* Non-empty calendar tiles */
+    .gh-column-parent > div > :not(.empty-tile) {
         @apply size-6 rounded-md border shadow-sm transition-transform ease-out hover:scale-125 hover:border-2;
     }
 
-    .tile.c4 {
+    .gh-column-parent .c4 {
         @apply border-green-900 bg-green-800;
     }
 
-    .tile.c3 {
+    .gh-column-parent .c3 {
         @apply border-green-700 bg-green-700/80;
     }
 
-    .tile.c2 {
+    .gh-column-parent .c2 {
         @apply border-green-600/30 bg-green-600/50;
     }
 
-    .tile.c1 {
+    .gh-column-parent .c1 {
         @apply border-green-600/20 bg-green-500/30;
     }
 
-    .tile.c0 {
+    .gh-column-parent .c0 {
         @apply border-stone-300 bg-stone-300/80;
     }
 </style>
