@@ -1,18 +1,16 @@
 ---
 import { getGitHubContributionWeeks } from "../lib/githubContributions";
 
-function getColor(contributionCount: number) {
-    if (contributionCount >= 20) {
-        return "bg-green-800 border-green-900";
-    } else if (contributionCount >= 10) {
-        return "bg-green-700/80 border-green-700";
-    } else if (contributionCount >= 5) {
-        return "bg-green-600/50 border-green-600/30";
-    } else if (contributionCount >= 1) {
-        return "bg-green-500/30 border-green-600/20";
-    } else {
-        return "bg-stone-300/80 border-stone-300";
-    }
+function getTileColorClass(contributionCount: number) {
+    return contributionCount >= 20
+        ? "c4"
+        : contributionCount >= 10
+          ? "c3"
+          : contributionCount >= 5
+            ? "c2"
+            : contributionCount >= 1
+              ? "c1"
+              : "c0";
 }
 
 const contributionInfo = await getGitHubContributionWeeks(
@@ -54,11 +52,11 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
             <div class="flex flex-row gap-1">
                 {
                     contributionInfo.weeks.map((week) => (
-                        <div class="flex flex-col gap-1">
+                        <div class="column">
                             {week.map((day) =>
                                 day ? (
                                     <div
-                                        class={`size-6 rounded-md border shadow-sm transition-transform ease-out hover:scale-125 hover:border-2 ${day ? getColor(day.contributionCount) : ""}`}
+                                        class={`tile ${getTileColorClass(day.contributionCount)}`}
                                         title={`${day.contributionCount} commits on ${dateFormatterWeekday.format(day.date)}`}
                                     />
                                 ) : (
@@ -77,3 +75,35 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
         </div>
     </div>
 </div>
+
+<style>
+    @reference "../styles/global.css";
+
+    .column {
+        @apply flex flex-col gap-1;
+    }
+
+    .tile {
+        @apply size-6 rounded-md border shadow-sm transition-transform ease-out hover:scale-125 hover:border-2;
+    }
+
+    .tile.c4 {
+        @apply border-green-900 bg-green-800;
+    }
+
+    .tile.c3 {
+        @apply border-green-700 bg-green-700/80;
+    }
+
+    .tile.c2 {
+        @apply border-green-600/30 bg-green-600/50;
+    }
+
+    .tile.c1 {
+        @apply border-green-600/20 bg-green-500/30;
+    }
+
+    .tile.c0 {
+        @apply border-stone-300 bg-stone-300/80;
+    }
+</style>
