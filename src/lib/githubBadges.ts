@@ -48,7 +48,7 @@ export async function getBadgesForRepo(repoId: string): Promise<Badge[]> {
 
     // Extract badges from Markdown content
     const matches = markdown.matchAll(
-        /\[!\[(?<alt>.*?\bbadge\b.*?)\]\((?<imageUrl>.*?)\)\]\((?<linkUrl>.*?)\)/g,
+        /\[!\[(?<alt>.*?)\]\((?<imageUrl>.*?)\)\]\((?<linkUrl>.*?)\)/g,
     );
     const badges = Array.from(matches, (match) => Badge.parse(match.groups));
 

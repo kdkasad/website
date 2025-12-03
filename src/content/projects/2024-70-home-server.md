@@ -10,10 +10,6 @@ image:
         displays statistics such as CPU, memory, disk, and network usage.
 
 githubId: kdkasad/home-server
-links:
-    - name: GitHub repository
-      url: https://github.com/kdkasad/home-server
-      icon: devicon:github
 
 devicons:
     - linux

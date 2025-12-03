@@ -11,15 +11,28 @@ export interface Props {
 }
 
 const { project } = Astro.props;
+const { Content, headings } = await render(project);
+
+// Fetch badges from GitHub README
 const badges = project.data.githubId
     ? await getBadgesForRepo(project.data.githubId).then((badges) =>
           badges.length > 0 ? badges : null,
       )
     : null;
-const { Content, headings } = await render(project);
+
+// Fetch referenced icons from collection
 const devicons = await Promise.all(
     project.data.devicons.map((icon) => getEntry(icon)),
 );
+
+// Combine explicit links and GitHub repo link
+if (project.data.githubId) {
+    project.data.links.unshift({
+        url: "https://github.com/" + project.data.githubId,
+        name: "GitHub repository",
+        icon: "devicon:github",
+    });
+}
 ---
 
 {
@@ -32,7 +45,7 @@ const devicons = await Promise.all(
     id={project.id}
     class="bg-background border-secondary/30 h-full max-w-xl flex-none overflow-hidden rounded-2xl border shadow-xl"
 >
-    <div class="relative h-full overflow-y-auto p-8 pb-16">
+    <div class="relative h-full overflow-y-auto p-4 pb-16 sm:p-8">
         {/* Title */}
         <h2 class="text-2xl font-black">{project.data.title}</h2>
 
@@ -62,7 +75,7 @@ const devicons = await Promise.all(
         {
             // Badges
             badges && (
-                <div class="mt-2">
+                <div class="mt-4">
                     {badges.map((badge) => (
                         <a href={badge.linkUrl}>
                             <img
@@ -76,11 +89,13 @@ const devicons = await Promise.all(
             )
         }
 
-        <figure class="mt-8 mb-8 flex flex-1 flex-col items-center gap-4">
+        <figure
+            class="mt-8 mb-8 flex flex-1 flex-col items-center gap-4 px-4 sm:px-0"
+        >
             <Image
                 src={project.data.image.file}
                 alt={project.data.image.alt ?? ""}
-                class="rounded-lg shadow-lg"
+                class="max-h-80 w-auto rounded-lg shadow-lg"
             />
             <figcaption class="text-center text-stone-500">
                 {project.data.image.caption}
@@ -129,6 +144,6 @@ const devicons = await Promise.all(
     }
 
     .project-card-prose a {
-        @apply decoration-accent underline decoration-2 hover:font-medium;
+        @apply decoration-accent underline decoration-2 visited:text-stone-600 hover:decoration-4;
     }
 </style>

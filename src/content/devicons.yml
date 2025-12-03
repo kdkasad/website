@@ -66,3 +66,24 @@ docker:
 python:
     name: Python
     url: https://python.org
+
+html5:
+    name: HTML
+
+css3:
+    name: CSS
+
+javascript:
+    name: JavaScript
+
+php:
+    name: PHP
+    url: https://www.php.net
+
+chartjs:
+    name: Chart.js
+    url: https://www.chartjs.org
+
+raspberrypi:
+    name: Raspberry Pi
+    url: https://raspberrypi.com
