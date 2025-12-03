@@ -121,31 +121,30 @@ if (project.data.githubId) {
             <div class="mt-8 flex flex-row flex-wrap justify-end gap-2">
                 {
                     devicons.length > 0 &&
-                        devicons.map((icon) =>
-                            icon.data.url ? (
-                                <a href={icon.data.url} title={icon.data.name}>
-                                    <Icon
-                                        class="size-8"
-                                        name={"devicon:" + icon.id}
-                                        desc={icon.data.name}
-                                    />
-                                    <span class="sr-only">
-                                        {icon.data.name}
-                                    </span>
-                                </a>
-                            ) : (
+                        devicons.map((icon) => {
+                            const inner = (
                                 <>
                                     <Icon
                                         class="size-8"
-                                        name={"devicon:" + icon.id}
+                                        name={
+                                            icon.data.replaceWith ??
+                                            `devicon:${icon.id}`
+                                        }
                                         desc={icon.data.name}
                                     />
                                     <span class="sr-only">
                                         {icon.data.name}
                                     </span>
                                 </>
-                            ),
-                        )
+                            );
+                            return icon.data.url ? (
+                                <a href={icon.data.url} title={icon.data.name}>
+                                    {inner}
+                                </a>
+                            ) : (
+                                inner
+                            );
+                        })
                 }
             </div>
         </div>

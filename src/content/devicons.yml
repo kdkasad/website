@@ -30,6 +30,7 @@ githubactions:
 linux:
     name: Linux
     url: https://kernel.org
+    replaceWith: local:tux
 
 nginx:
     name: Nginx

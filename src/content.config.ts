@@ -11,6 +11,7 @@ export const collections = {
         schema: z.object({
             url: z.string().url().optional(),
             name: z.string().nonempty(),
+            replaceWith: z.string().optional(),
         }),
     }),
 
