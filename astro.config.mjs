@@ -9,11 +9,14 @@ export default defineConfig({
     env: {
         // Defines the schema for environment variables
         schema: {
+            // GitHub API token for fetching data like contributions and README badges
             GH_API_TOKEN: envField.string({
                 context: "server",
                 access: "secret",
             }),
-            SKIP_PROJECTS: envField.boolean({
+
+            // If set, skips fetching of remote content (e.g. data from GitHub)
+            SKIP_REMOTE: envField.boolean({
                 context: "server",
                 access: "public",
                 default: false,

@@ -1,7 +1,7 @@
 ---
 import ProjectCard from "../ProjectCard.astro";
 
-import { SKIP_PROJECTS } from "astro:env/server";
+import { SKIP_REMOTE } from "astro:env/server";
 import { getCollection } from "astro:content";
 
 export interface Props {
@@ -10,7 +10,7 @@ export interface Props {
 
 const { headingStyle } = Astro.props;
 
-const projects = SKIP_PROJECTS ? [] : await getCollection("projects");
+const projects = await getCollection("projects");
 // Sort projects by ID (filename) in descending order
 projects.sort((a, b) => b.id.localeCompare(a.id));
 ---

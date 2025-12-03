@@ -1,5 +1,9 @@
 ---
-import { getGitHubContributionWeeks } from "../lib/githubContributions";
+import { SKIP_REMOTE } from "astro:env/server";
+import {
+    getGitHubContributionWeeks,
+    type ContributionInfo,
+} from "../lib/githubContributions";
 
 function getTileColorClass(contributionCount: number) {
     return contributionCount >= 20
@@ -13,12 +17,11 @@ function getTileColorClass(contributionCount: number) {
               : "c0";
 }
 
-const contributionInfo = await getGitHubContributionWeeks(
-    "kdkasad",
-    new Date("2020-01-01"),
-);
-const firstDay = contributionInfo.weeks[0].find((day) => day !== null)!;
-const lastDay = contributionInfo.weeks.at(-1)!.at(-1)!;
+const contributionInfo: ContributionInfo = SKIP_REMOTE
+    ? { totalContributions: 0, weeks: [] }
+    : await getGitHubContributionWeeks("kdkasad", new Date("2020-01-01"));
+const firstDay = contributionInfo.weeks[0]?.find((day) => day !== null);
+const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
 const dateFormatterWeekday = Intl.DateTimeFormat("en-US", {
     weekday: "long",
     month: "short",
@@ -44,11 +47,13 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
         class="flex w-full flex-row-reverse overflow-x-auto py-1 [scrollbar-color:var(--color-stone-300)_transparent] hover:[scrollbar-color:var(--color-stone-400)_transparent]"
     >
         <div class="flex w-fit flex-row gap-4 px-6">
-            <div
-                class="text-secondary rotate-180 text-center font-mono text-lg [writing-mode:vertical-rl]"
-            >
-                {dateFormatterJustDate.format(firstDay.date)}
-            </div>
+            {
+                firstDay && (
+                    <div class="text-secondary rotate-180 text-center font-mono text-lg [writing-mode:vertical-rl]">
+                        {dateFormatterJustDate.format(firstDay.date)}
+                    </div>
+                )
+            }
             <div class="gh-column-parent flex flex-row gap-1">
                 {
                     contributionInfo.weeks.map((week) => (
@@ -69,11 +74,13 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
                     ))
                 }
             </div>
-            <div
-                class="text-secondary text-center font-mono text-lg [writing-mode:vertical-rl]"
-            >
-                {dateFormatterJustDate.format(lastDay.date)}
-            </div>
+            {
+                lastDay && (
+                    <div class="text-secondary text-center font-mono text-lg [writing-mode:vertical-rl]">
+                        {dateFormatterJustDate.format(lastDay.date)}
+                    </div>
+                )
+            }
         </div>
     </div>
 </div>

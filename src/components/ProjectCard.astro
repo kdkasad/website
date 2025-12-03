@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { Image } from "astro:assets";
 
+import { SKIP_REMOTE } from "astro:env/server";
 import { type CollectionEntry, render } from "astro:content";
 import { getBadgesForRepo } from "../lib/githubBadges";
 import { getEntry } from "astro:content";
@@ -14,11 +15,12 @@ const { project } = Astro.props;
 const { Content, headings } = await render(project);
 
 // Fetch badges from GitHub README
-const badges = project.data.githubId
-    ? await getBadgesForRepo(project.data.githubId).then((badges) =>
-          badges.length > 0 ? badges : null,
-      )
-    : null;
+const badges =
+    !SKIP_REMOTE && project.data.githubId
+        ? await getBadgesForRepo(project.data.githubId).then((badges) =>
+              badges.length > 0 ? badges : null,
+          )
+        : null;
 
 // Fetch referenced icons from collection
 const devicons = await Promise.all(
