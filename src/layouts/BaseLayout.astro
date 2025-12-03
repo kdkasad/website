@@ -24,5 +24,41 @@ const { extraBodyClasses = "", ...seoProps } = Astro.props;
     </head>
     <body class={`bg-background text-primary ${extraBodyClasses}`}>
         <slot />
+
+        <script>
+            // When a link targeting an element on the page is clicked, highlight
+            // the page element temporarily
+
+            const targetClasses = [
+                "bg-transparent",
+                "transition-colors",
+                "duration-1000",
+            ];
+            const links = document.querySelectorAll(
+                "a[href]",
+            ) satisfies NodeListOf<HTMLAnchorElement>;
+            links.forEach((link) => {
+                const href = link.getAttribute("href");
+                if (!href?.startsWith("#")) return;
+                const id = href.split("#")[1];
+                const target = id ? document.getElementById(id) : undefined;
+                if (!target)
+                    throw new Error(
+                        `target not found for nav link with href="${href}"`,
+                    );
+                targetClasses.forEach((clazz) => {
+                    target?.classList.add(clazz);
+                });
+                link.addEventListener("click", () => {
+                    target?.classList.replace("bg-transparent", "bg-highlight");
+                    setTimeout(() => {
+                        target?.classList.replace(
+                            "bg-highlight",
+                            "bg-transparent",
+                        );
+                    }, 1500);
+                });
+            });
+        </script>
     </body>
 </html>

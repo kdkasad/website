@@ -96,36 +96,4 @@ const headings = ["Projects", "Blog", "Work experience", "Other stuff"];
     <ProjectsSection {headingStyle} />
 
     <Footer class="mt-24" />
-
-    <script>
-        // When a link targeting an element on the page is clicked, highlight
-        // the page element temporarily
-
-        const targetClasses = [
-            "bg-transparent",
-            "transition-colors",
-            "duration-1000",
-        ];
-        const links = document.querySelectorAll(
-            "a[href][data-highlight]",
-        ) satisfies NodeListOf<HTMLAnchorElement>;
-        links.forEach((link) => {
-            const href = link.getAttribute("href");
-            const id = href?.split("#")[1];
-            const target = id ? document.getElementById(id) : undefined;
-            if (!target)
-                throw new Error(
-                    `link target not found for data-highlight with href="${href}"`,
-                );
-            targetClasses.forEach((clazz) => {
-                target?.classList.add(clazz);
-            });
-            link.addEventListener("click", () => {
-                target?.classList.replace("bg-transparent", "bg-highlight");
-                setTimeout(() => {
-                    target?.classList.replace("bg-highlight", "bg-transparent");
-                }, 1500);
-            });
-        });
-    </script>
 </BaseLayout>
