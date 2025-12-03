@@ -26,3 +26,43 @@ codecov:
 githubactions:
     name: GitHub Actions
     url: https://docs.github.com/en/actions
+
+linux:
+    name: Linux
+    url: https://kernel.org
+
+nginx:
+    name: Nginx
+    url: https://nginx.org
+
+bash:
+    name: Bourne-Again Shell (Bash)
+    url: https://en.wikipedia.org/wiki/Bash_(Unix_shell)
+
+debian:
+    name: Debian Linux
+    url: https://debian.org
+
+ansible:
+    name: Ansible
+    url: https://ansible.com
+
+prometheus:
+    name: Prometheus
+    url: https://prometheus.io
+
+grafana:
+    name: Grafana
+    url: https://grafana.com/grafana/
+
+traefikproxy:
+    name: Traefik
+    url: https://traefik.io
+
+docker:
+    name: Docker
+    url: https://docker.com
+
+python:
+    name: Python
+    url: https://python.org
