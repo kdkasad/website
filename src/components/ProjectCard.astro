@@ -2,9 +2,7 @@
 import { Icon } from "astro-icon/components";
 import { Image } from "astro:assets";
 
-import { SKIP_REMOTE } from "astro:env/server";
 import { type CollectionEntry, render } from "astro:content";
-import { getBadgesForRepo } from "../lib/githubBadges";
 import { getEntry } from "astro:content";
 
 export interface Props {
@@ -12,29 +10,12 @@ export interface Props {
 }
 
 const { project } = Astro.props;
-const { Content, headings } = await render(project);
-
-// Fetch badges from GitHub README
-const badges =
-    !SKIP_REMOTE && project.data.githubId
-        ? await getBadgesForRepo(project.data.githubId).then((badges) =>
-              badges.length > 0 ? badges : null,
-          )
-        : null;
+const { Content } = await render(project);
 
 // Fetch referenced icons from collection
 const devicons = await Promise.all(
     project.data.devicons.map((icon) => getEntry(icon)),
 );
-
-// Combine explicit links and GitHub repo link
-if (project.data.githubId) {
-    project.data.links.unshift({
-        url: "https://github.com/" + project.data.githubId,
-        name: "GitHub repository",
-        icon: "devicon:github",
-    });
-}
 ---
 
 {/* Screen-size wrapper for small screens */}
@@ -85,9 +66,9 @@ if (project.data.githubId) {
 
             {
                 // Badges
-                badges && (
+                project.data.badges && project.data.badges.length > 0 && (
                     <div class="mt-4">
-                        {badges.map((badge) => (
+                        {project.data.badges.map((badge) => (
                             <a href={badge.linkUrl}>
                                 <img
                                     class="inline"
