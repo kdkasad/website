@@ -73,7 +73,18 @@ export const collections = {
     }),
 
     projects: defineCollection({
-        loader: glob({ pattern: "**/*.md", base: "src/content/projects" }),
+        loader: glob({ pattern: "*.md", base: "src/content/projects" }),
         schema: ProjectSchema,
+    }),
+
+    blog: defineCollection({
+        loader: glob({ pattern: "*.md", base: "src/content/blog" }),
+        schema: z.object({
+            title: z.string().nonempty(),
+            author: z.string().nonempty().default("Kian Kasad"),
+            description: z.string().nonempty(),
+            date: z.coerce.date(),
+            draft: z.boolean().default(false),
+        }),
     }),
 };

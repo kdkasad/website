@@ -1,0 +1,88 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import Header from "../../../../../components/Header.astro";
+import Footer from "../../../../../components/Footer.astro";
+import { Icon } from "astro-icon/components";
+
+import type { GetStaticPaths } from "astro";
+import { getCollection, render } from "astro:content";
+import { getBlogPostParams } from "../../../../../lib/blog";
+
+// Returns list of blog posts to generate static pages
+export const getStaticPaths = (async () => {
+    const posts = await getCollection("blog");
+    return posts.map((post) => ({
+        params: getBlogPostParams(post) as unknown as Record<string, string>,
+        props: { post },
+    }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout
+    title={post.data.title}
+    description={post.data.description}
+    author={post.data.author}
+>
+    <div
+        class="bg-accent text-background w-full shadow-lg text-shadow-green-900"
+    >
+        <Header />
+
+        <div
+            class="mx-auto max-w-screen-xl p-8 pt-4 text-lg font-medium *:not-first:mt-4 lg:p-16 lg:pt-8 *:not-first:lg:mt-8"
+        >
+            <div>
+                <a class="hover:underline" href="/blog">
+                    &LeftArrow;&nbsp;&nbsp;Back to blog
+                </a>
+            </div>
+            <div class="text-6xl font-black text-shadow-xs">
+                {post.data.title}
+            </div>
+            <div class="flex justify-between">
+                <div>{post.data.author}</div>
+                <div id="post-date" data-timestamp={post.data.date.getTime()}>
+                    {
+                        post.data.date.toLocaleDateString(undefined, {
+                            dateStyle: "long",
+                            timeZone: "UTC",
+                        })
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="prose prose-lg prose-stone prose-headings:underline prose-headings:decoration-accent prose-headings:decoration-4 prose-headings:tracking-tight prose-h1:decoration-6 prose-h1:mt-12 prose-h1:mb-4 prose-a:decoration-accent prose-a:decoration-2 prose-a:hover:decoration-3 prose-code:before:content-none prose-code:after:content-none mx-auto mt-16 max-w-[75ch] px-8 leading-normal [&>section.footnotes]:mt-16 [&>section.footnotes]:border-t [&>section.footnotes]:pt-12"
+    >
+        <Content />
+    </div>
+
+    <div class="mt-32">
+        <Footer />
+    </div>
+</BaseLayout>
+
+<script>
+    // Replace post date with browser's locale
+    const dateLabel = document.getElementById("post-date");
+    if (!dateLabel) {
+        throw new Error("#post-date not found");
+    }
+    const timestamp = parseInt(dateLabel.dataset.timestamp ?? "");
+    const date = new Date(timestamp);
+    dateLabel.textContent = date.toLocaleDateString(undefined, {
+        dateStyle: "long",
+        timeZone: "UTC",
+    });
+</script>
+
+<!-- <style is:global>
+section.footnotes {
+    @apply mt-8;
+}
+</style> -->

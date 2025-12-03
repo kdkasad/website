@@ -1,0 +1,20 @@
+---
+import ContentLayout from "../../layouts/ContentLayout.astro";
+
+import { getCollection } from "astro:content";
+import { getBlogPostPath } from "../../lib/blog";
+
+const posts = await getCollection("blog");
+---
+
+<ContentLayout title="Blog | Kian Kasad">
+    <ul>
+        {
+            posts.map((post) => (
+                <li>
+                    <a href={getBlogPostPath(post)}>{post.data.title}</a>
+                </li>
+            ))
+        }
+    </ul>
+</ContentLayout>

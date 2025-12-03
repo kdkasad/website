@@ -15,6 +15,7 @@ const { ...baseLayoutProps } = Astro.props;
 
     <div class="flex min-h-screen flex-col">
         <Header />
+        <slot name="hero" />
         <div class="mx-auto w-full max-w-screen-xl flex-grow p-8">
             <slot />
         </div>

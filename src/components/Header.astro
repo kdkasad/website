@@ -4,6 +4,11 @@ const navItems: NavItem[] = [
     { name: "Home", path: "/" },
     { name: "Blog", path: "/blog" },
 ];
+
+const boldNavItemPath = navItems
+    .map(({ path }) => path)
+    .filter((path) => Astro.url.pathname.startsWith(path))
+    .toSorted((a, b) => b.length - a.length)[0];
 ---
 
 <header class="w-full">
@@ -14,15 +19,11 @@ const navItems: NavItem[] = [
         <a href="/" class="font-bold"> kasad.com </a>
 
         <!-- Navigation menu -->
-        <nav class="text-sm text-gray-700">
+        <nav class="text-sm">
             <menu class="hidden flex-row gap-4 sm:flex">
                 {
                     navItems.map(({ path, name }) => (
-                        <li
-                            class={
-                                Astro.url.pathname === path ? "font-bold" : ""
-                            }
-                        >
+                        <li class={path == boldNavItemPath ? "font-bold" : ""}>
                             <a href={path}>{name}</a>
                         </li>
                     ))
