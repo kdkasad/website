@@ -32,7 +32,7 @@ const devicons = await Promise.all(
     id={project.id}
     class="bg-background border-secondary/30 h-full max-w-xl flex-none overflow-hidden rounded-2xl border shadow-xl"
 >
-    <div class="h-full overflow-y-auto p-8 pb-16">
+    <div class="relative h-full overflow-y-auto p-8 pb-16">
         {/* Title */}
         <h2 class="text-2xl font-black">{project.data.title}</h2>
 
@@ -51,6 +51,7 @@ const devicons = await Promise.all(
                                 class="transition-opacity hover:opacity-60"
                             >
                                 <Icon name={link.icon} class="size-6" />
+                                <span class="sr-only">{link.name}</span>
                             </a>
                         ))}
                     </div>
@@ -102,13 +103,17 @@ const devicons = await Promise.all(
                                     name={"devicon:" + icon.id}
                                     desc={icon.data.name}
                                 />
+                                <span class="sr-only">{icon.data.name}</span>
                             </a>
                         ) : (
-                            <Icon
-                                class="size-8"
-                                name={"devicon:" + icon.id}
-                                desc={icon.data.name}
-                            />
+                            <>
+                                <Icon
+                                    class="size-8"
+                                    name={"devicon:" + icon.id}
+                                    desc={icon.data.name}
+                                />
+                                <span class="sr-only">{icon.data.name}</span>
+                            </>
                         ),
                     )
             }
