@@ -19,12 +19,12 @@ projects.sort((a, b) => b.id.localeCompare(a.id));
         id="projects"
         class="text-shadow-background flex-none p-8 text-shadow-md"
     >
-        <h1 class={headingStyle}>Projects</h1>
+        <a href="#projects"><h1 class={headingStyle}>Projects</h1></a>
         <p class="text-lg">A selection of my more notable projects.</p>
     </div>
 
     <div
-        class="flex flex-1 flex-col flex-nowrap items-center gap-8 p-2 pt-0 sm:p-8 lg:flex-row lg:items-end lg:overflow-x-auto"
+        class="flex flex-1 flex-col flex-nowrap items-center pt-0 lg:flex-row lg:items-end lg:gap-8 lg:overflow-x-auto lg:p-8"
     >
         {projects.map((project) => <ProjectCard {project} />)}
     </div>
