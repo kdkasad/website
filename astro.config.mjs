@@ -13,6 +13,11 @@ export default defineConfig({
                 context: "server",
                 access: "secret",
             }),
+            SKIP_PROJECTS: envField.boolean({
+                context: "server",
+                access: "public",
+                default: false,
+            }),
         },
     },
     vite: {
