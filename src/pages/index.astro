@@ -7,6 +7,7 @@ import Affiliations from "../components/Affiliations.astro";
 import GitHubContributions from "../components/GitHubContributions.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import ProjectsSection from "../components/sections/ProjectsSection.astro";
 
 const headingStyle =
     "decoration-accent mb-4 text-3xl font-black underline decoration-4";
@@ -66,28 +67,33 @@ const headings = ["Projects", "Blog", "Work experience", "Other stuff"];
         </section>
 
         {/* Heading links */}
-        <aside
+        <nav
             class="bg-accent text-background mt-16 p-8 sm:px-16 sm:py-4 xl:mt-0"
         >
             <div
                 class="mx-auto flex w-full max-w-screen-xl flex-col gap-x-16 gap-y-4 sm:flex-row sm:flex-wrap sm:justify-between"
             >
                 {
-                    headings.map((heading) => (
-                        <a
-                            href={`#${heading.toLowerCase().replaceAll(/[^a-z0-9]/g, "-")}`}
-                            class={
-                                headingStyle.replace("mb-4", "") +
-                                " decoration-green-900 text-shadow-2xs text-shadow-green-900"
-                            }
-                        >
-                            {heading}
-                        </a>
-                    ))
+                    headings.map((heading) => {
+                        return (
+                            <a
+                                href={`#${heading.toLowerCase().replaceAll(/[^a-z0-9]/g, "-")}`}
+                                class={
+                                    headingStyle.replace("mb-4", "") +
+                                    " decoration-green-900 text-shadow-2xs text-shadow-green-900"
+                                }
+                                data-highlight
+                            >
+                                {heading}
+                            </a>
+                        );
+                    })
                 }
             </div>
-        </aside>
+        </nav>
     </div>
+
+    <ProjectsSection {headingStyle} />
 
     <Footer class="mt-24" />
 
@@ -101,14 +107,15 @@ const headings = ["Projects", "Blog", "Work experience", "Other stuff"];
             "duration-1000",
         ];
         const links = document.querySelectorAll(
-            "a[data-highlight]",
+            "a[href][data-highlight]",
         ) satisfies NodeListOf<HTMLAnchorElement>;
         links.forEach((link) => {
-            const id = link.dataset["highlight"];
+            const href = link.getAttribute("href");
+            const id = href?.split("#")[1];
             const target = id ? document.getElementById(id) : undefined;
             if (!target)
                 throw new Error(
-                    `link target not found for data-highlight="${id}`,
+                    `link target not found for data-highlight with href="${href}"`,
                 );
             targetClasses.forEach((clazz) => {
                 target?.classList.add(clazz);

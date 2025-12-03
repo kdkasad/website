@@ -1,0 +1,48 @@
+---
+import ProjectCard from "../ProjectCard.astro";
+
+import { getCollection } from "astro:content";
+
+export interface Props {
+    headingStyle: string;
+}
+
+const { headingStyle } = Astro.props;
+
+const projects = await getCollection("projects");
+// Sort projects by ID (filename) in descending order
+projects.sort((a, b) => b.id.localeCompare(a.id));
+---
+
+<section class="flex flex-col items-stretch lg:h-screen">
+    <div
+        id="projects"
+        class="text-shadow-background flex-none p-8 text-shadow-md"
+    >
+        <h1 class={headingStyle}>Projects</h1>
+        <p class="text-lg">A selection of my more interesting projects.</p>
+    </div>
+
+    <div
+        class="flex flex-1 flex-col flex-nowrap items-center gap-8 p-8 pt-0 lg:flex-row lg:items-end lg:overflow-x-auto"
+    >
+        {projects.map((project) => <ProjectCard {project} />)}
+    </div>
+</section>
+
+<style>
+    section {
+        --color-stripe: color-mix(
+            in oklab,
+            var(--color-stone-300) 25%,
+            transparent
+        );
+        background: repeating-linear-gradient(
+            -45deg,
+            var(--color-background),
+            var(--color-background) 2rem,
+            var(--color-stripe) 2rem,
+            var(--color-stripe) 4rem
+        );
+    }
+</style>

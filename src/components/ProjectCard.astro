@@ -1,0 +1,129 @@
+---
+import { Icon } from "astro-icon/components";
+import { Image } from "astro:assets";
+
+import { type CollectionEntry, render } from "astro:content";
+import { getBadgesForRepo } from "../lib/githubBadges";
+import { getEntry } from "astro:content";
+
+export interface Props {
+    project: CollectionEntry<"projects">;
+}
+
+const { project } = Astro.props;
+const badges = project.data.githubId
+    ? await getBadgesForRepo(project.data.githubId).then((badges) =>
+          badges.length > 0 ? badges : null,
+      )
+    : null;
+const { Content, headings } = await render(project);
+const devicons = await Promise.all(
+    project.data.devicons.map((icon) => getEntry(icon)),
+);
+---
+
+{
+    /*
+    overflow-hidden wrapper around the overflow-auto div so that the scroll bar
+    gets hidden and doesn't mess with the rounded corners
+*/
+}
+<div
+    id={project.id}
+    class="bg-background border-secondary/30 h-full max-w-xl flex-none overflow-hidden rounded-2xl border shadow-xl"
+>
+    <div class="h-full overflow-y-auto p-8 pb-16">
+        {/* Title */}
+        <h2 class="text-2xl font-black">{project.data.title}</h2>
+
+        <div class="flex flex-row flex-wrap items-center justify-between gap-4">
+            {/* Tag line */}
+            <p class="text-lg text-stone-500">{project.data.tagline}</p>
+
+            {/* Links */}
+            {
+                project.data.links.length > 0 && (
+                    <div class="flex flex-row flex-wrap gap-2">
+                        {project.data.links.map((link) => (
+                            <a
+                                href={link.url}
+                                title={link.name}
+                                class="transition-opacity hover:opacity-60"
+                            >
+                                <Icon name={link.icon} class="size-6" />
+                            </a>
+                        ))}
+                    </div>
+                )
+            }
+        </div>
+
+        {
+            // Badges
+            badges && (
+                <div class="mt-2">
+                    {badges.map((badge) => (
+                        <a href={badge.linkUrl}>
+                            <img
+                                class="inline"
+                                src={badge.imageUrl}
+                                alt={badge.alt}
+                            />
+                        </a>
+                    ))}
+                </div>
+            )
+        }
+
+        <figure class="mt-8 mb-8 flex flex-1 flex-col items-center gap-4">
+            <Image
+                src={project.data.image.file}
+                alt={project.data.image.alt ?? ""}
+                class="rounded-lg shadow-lg"
+            />
+            <figcaption class="text-center text-stone-500">
+                {project.data.image.caption}
+            </figcaption>
+        </figure>
+
+        <div class="project-card-prose">
+            <Content />
+        </div>
+
+        {/* Devicons */}
+        <div class="mt-8 flex flex-row flex-wrap justify-end gap-2">
+            {
+                devicons.length > 0 &&
+                    devicons.map((icon) =>
+                        icon.data.url ? (
+                            <a href={icon.data.url} title={icon.data.name}>
+                                <Icon
+                                    class="size-8"
+                                    name={"devicon:" + icon.id}
+                                    desc={icon.data.name}
+                                />
+                            </a>
+                        ) : (
+                            <Icon
+                                class="size-8"
+                                name={"devicon:" + icon.id}
+                                desc={icon.data.name}
+                            />
+                        ),
+                    )
+            }
+        </div>
+    </div>
+</div>
+
+<style is:global>
+    @reference "../styles/global.css";
+
+    .project-card-prose p {
+        @apply mt-4;
+    }
+
+    .project-card-prose a {
+        @apply decoration-accent underline decoration-2 hover:font-medium;
+    }
+</style>

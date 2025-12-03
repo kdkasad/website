@@ -16,6 +16,7 @@
         "@fontsource-variable/raleway": "^5.2.8",
         "@iconify-json/devicon": "^1.2.51",
         "@iconify-json/fa7-solid": "^1.2.2",
+        "@tailwindcss/typography": "^0.5.19",
         "@tailwindcss/vite": "^4.1.17",
         "astro": "^5.16.3",
         "astro-icon": "^1.1.5",

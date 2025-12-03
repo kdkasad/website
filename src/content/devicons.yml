@@ -1,0 +1,28 @@
+# This collection is a mapping of devicon IDs to metadata used when
+# displaying them, such as a full name for what the icon represents and a
+# URL for more information about the technology
+
+---
+github:
+    name: GitHub
+    url: https://github.com
+
+rust:
+    name: Rust
+    url: https://rust-lang.org
+
+c:
+    name: C (programming language)
+    url: https://en.wikipedia.org/wiki/C_(programming_language)
+
+wasm:
+    name: WebAssembly (WASM)
+    url: https://webassembly.org
+
+codecov:
+    name: CodeCov
+    url: https://codecov.io
+
+githubactions:
+    name: GitHub Actions
+    url: https://docs.github.com/en/actions
