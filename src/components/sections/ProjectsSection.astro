@@ -16,23 +16,20 @@ projects.sort((a, b) => b.id.localeCompare(a.id));
 ---
 
 <section class="flex flex-col items-stretch lg:h-screen">
-    <div
-        id="projects"
-        class="text-shadow-background flex-none p-8 text-shadow-md"
-    >
+    <div id="projects" class="flex-none p-8">
         <a href="#projects"><h1 class={headingStyle}>Projects</h1></a>
         <p class="text-lg">A selection of my more notable projects.</p>
     </div>
 
     <div
-        class="flex flex-1 flex-col flex-nowrap items-center pt-0 lg:flex-row lg:items-end lg:gap-8 lg:overflow-x-auto lg:p-8"
+        class="gutter inset-shadow-sm-even-tb flex flex-1 flex-col flex-nowrap items-center pt-0 lg:flex-row lg:items-end lg:gap-8 lg:overflow-x-auto lg:p-8"
     >
         {projects.map((project) => <ProjectCard {project} />)}
     </div>
 </section>
 
 <style>
-    section {
+    .gutter {
         --color-stripe: color-mix(
             in oklab,
             var(--color-stone-300) 25%,
