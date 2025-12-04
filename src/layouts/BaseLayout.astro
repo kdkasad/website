@@ -22,7 +22,12 @@ const { extraBodyClasses = "", ...seoProps } = Astro.props;
         <PageSEO {...seoProps} />
         <slot name="head" />
     </head>
-    <body class={`bg-background text-primary ${extraBodyClasses}`}>
+    <body
+        class:list={[
+            "bg-background text-primary lining-nums",
+            extraBodyClasses,
+        ]}
+    >
         <slot />
 
         <script>

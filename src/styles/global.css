@@ -15,6 +15,11 @@
         var(--color-yellow-400) 60%,
         transparent
     );
+    --color-error: color-mix(
+        in oklab,
+        var(--color-red-700) 80%,
+        var(--color-background)
+    );
 
     --font-default-sans:
         ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
