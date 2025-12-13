@@ -53,6 +53,7 @@ const devicons = await Promise.all(
                                 <a
                                     href={link.url}
                                     title={link.name}
+                                    target="_blank"
                                     class="transition-opacity hover:opacity-60"
                                 >
                                     <Icon name={link.icon} class="size-6" />
@@ -69,7 +70,7 @@ const devicons = await Promise.all(
                 project.data.badges && project.data.badges.length > 0 && (
                     <div class="mt-4">
                         {project.data.badges.map((badge) => (
-                            <a href={badge.linkUrl}>
+                            <a href={badge.linkUrl} target="_blank">
                                 <img
                                     class="inline"
                                     src={badge.imageUrl}
@@ -119,7 +120,11 @@ const devicons = await Promise.all(
                                 </>
                             );
                             return icon.data.url ? (
-                                <a href={icon.data.url} title={icon.data.name}>
+                                <a
+                                    href={icon.data.url}
+                                    title={icon.data.name}
+                                    target="_blank"
+                                >
                                     {inner}
                                 </a>
                             ) : (
