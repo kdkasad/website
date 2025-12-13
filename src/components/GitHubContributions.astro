@@ -22,13 +22,6 @@ const contributionInfo: ContributionInfo = SKIP_REMOTE
     : await getGitHubContributionWeeks("kdkasad", new Date("2020-01-01"));
 const firstDay = contributionInfo.weeks[0]?.find((day) => day !== null);
 const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
-const dateFormatterWeekday = Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-});
 const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
     month: "long",
     day: "numeric",
@@ -37,7 +30,11 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
 });
 ---
 
-<div id="github-calendar" class="py-2">
+<github-calendar
+    id="github-calendar"
+    class="py-2"
+    data-start-date={firstDay?.date.getTime()}
+>
     <div
         class="text-secondary flex h-8 flex-row items-end pl-8 font-mono text-lg"
     >
@@ -64,7 +61,7 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
                                         class={getTileColorClass(
                                             day.contributionCount,
                                         )}
-                                        title={`${day.contributionCount} commits on ${dateFormatterWeekday.format(day.date)}`}
+                                        data-c={day.contributionCount}
                                     />
                                 ) : (
                                     <div class="empty-tile size-6" />
@@ -83,16 +80,56 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
             }
         </div>
     </div>
-</div>
+</github-calendar>
 
-<!--
+{
+    /*
+    Populate the title attribute of each tile with a tooltip string on the client.
+    Doing it on the client saves a lot of unnecessary bytes in the HTML, and won't
+    ruin the look of the page if JavaScript is disabled.
+    */
+}
+<script>
+    // Datetime formatter with local locale since we're running client-side
+    const dateFormatterWeekday = Intl.DateTimeFormat(undefined, {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+    class GitHubCalendarElement extends HTMLElement {
+        connectedCallback() {
+            const tiles = this.querySelectorAll(
+                "div[data-c]",
+            ) as NodeListOf<HTMLElement>;
+            let startDateStr = this.dataset.startDate;
+            if (startDateStr === undefined) {
+                throw new Error("github-calendar start-date is undefined");
+            }
+            const startDate = new Date(parseInt(startDateStr));
+            const currentDate = startDate;
+            const DAY_AS_MS = 86_400_000; // 1000 ms/s * 60 s/min * 60 min/hr * 24 hr/day
+            for (const tile of tiles) {
+                const commits = tile.dataset.c?.toString() ?? "??";
+                tile.title = `${commits} commits on ${dateFormatterWeekday.format(currentDate)}`;
+                currentDate.setTime(currentDate.getTime() + DAY_AS_MS);
+            }
+            // title={`${day.contributionCount} commits on ${dateFormatterWeekday.format(day.date)}`}
+        }
+    }
+    window.customElements.define("github-calendar", GitHubCalendarElement);
+</script>
+
+{
+    /*
 Styles for this component are made global for size optimization of the resulting HTML.
 If we use Tailwind classes, each tile <div> becomes large because of the long class attribute.
 If we use component-scoped styles, it's much better (saves ~200 kB), but Astro
 still adds the data attribute to every element in the component for style scoping.
 By making the styles global, we remove the need for a long data attribute on every element in this component,
 thus resulting in ~270 kB of savings.
--->
+*/
+}
 <style is:global>
     @reference "../styles/global.css";
 
