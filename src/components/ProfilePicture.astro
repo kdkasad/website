@@ -1,5 +1,6 @@
 ---
-import { Image } from "astro:assets";
+import { Picture } from "astro:assets";
+import profilePic from "../images/laptoppfp2-offwhite-cropped-small.png";
 
 const borderClasses = {
     thin: "border-2",
@@ -17,10 +18,11 @@ const border = borderClasses[Astro.props.border ?? "thick"];
     class={`aspect-square size-full flex-none overflow-hidden rounded-full ${border} border-accent shadow-lg`}
 >
     {/* Placeholder until profile picture is ready */}
-    <Image
-        src="https://avatars.githubusercontent.com/u/63574107?v=4"
-        inferSize={true}
-        alt="Profile picture"
+    <Picture
+        formats={["avif", "webp", "png"]}
+        src={profilePic}
+        title="Profile picture"
+        alt="Cartoon frog typing on a laptop with a mug of coffee nearby"
         class="h-full object-cover object-center"
     />
 </div>
