@@ -16,8 +16,9 @@ const headingStyle =
 const headings = [
     ["Projects", "#projects"],
     ["Blog", "/blog"],
-    ["Work experience", "#work-experience"],
-    ["Other stuff", "#"],
+    // ["Work experience", "#work-experience"],
+    // ["Other stuff", "#"],
+    ["More coming soon...", null],
 ];
 ---
 
@@ -122,10 +123,13 @@ const headings = [
                         return (
                             <a
                                 href={href}
-                                class={
-                                    headingStyle.replace("mb-4", "") +
-                                    " decoration-green-900 text-shadow-2xs text-shadow-green-900"
-                                }
+                                aria-disabled={href === null}
+                                class:list={[
+                                    headingStyle.replace("mb-4", ""),
+                                    "decoration-green-900 text-shadow-2xs text-shadow-green-900",
+                                    href === null &&
+                                        "cursor-not-allowed opacity-60",
+                                ]}
                                 data-highlight
                             >
                                 {name}
