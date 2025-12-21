@@ -42,12 +42,15 @@ const { extraBodyClasses = "", ...seoProps } = Astro.props;
                 if (!href?.startsWith("#")) return;
                 const id = href.split("#")[1];
                 const target = id ? document.getElementById(id) : undefined;
-                if (!target)
+                if (!target) {
                     throw new Error(
                         `target not found for nav link with href="${href}"`,
                     );
+                }
                 ["transition-colors", "duration-1000"].forEach((clazz) => {
-                    target?.classList.add(clazz);
+                    if (!target.classList.contains(clazz)) {
+                        target.classList.add(clazz);
+                    }
                 });
                 let originalBackground = target.classList
                     .values()
