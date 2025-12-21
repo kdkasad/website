@@ -1,0 +1,461 @@
+---
+title: UNIX Process Groups
+date: 2025-03-30T17:56:08-04:00
+description:
+  An exploration of UNIX shell process groups, written to expand on the
+  information covered in Purdue's CS 252 (Systems Programming) course.
+---
+
+> Note: This was written for students in Purdue's CS 252 course.
+> Hopefully the information will be useful to others as well, but there may be
+> some references that don't make sense.
+
+Hello fellow CS 252 student!
+
+Process groups are quite an important part of how shells and terminals function,
+so I was a bit sad to find out that CS 252 neglects to cover them at all.
+I decided to learn about them on my own and implement them in my shell. This is
+a collection of the information I gathered, and is hopefully also complete
+enough to act as a guide on how to implement process grouping in your shell.
+
+# Some background
+
+The _terminal_ is a kind of virtual device on UNIX systems.
+It is managed by the kernel, and its interface is defined in
+[POSIX &sect;11 - General Terminal Interface][posix-gti].
+I highly recommend reading &sect;11.1.1&ndash;&sect;11.1.4 of that document;
+they're not too long but will provide a _lot_ of clarity that
+will make the rest of this article make more sense.
+
+[posix-gti]: https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap11.html
+
+# What are process groups?
+
+They're exactly what they sound like: groups of processes.
+They let us interact with several processes at once.
+
+Process groups are implemented as another attribute in the process table.
+In addition to the process ID (PID), a process has a process group ID (PGID).
+This PGID contains the PID of the so-called _process group leader_, which can be
+any process in the process group. Two processes belong to the same process group
+if they have the same PGID.
+
+See the `credentials(7)` manual page for a more detailed explanation of the
+above.
+
+Finally, a terminal device can have one (and only one) foreground process
+group. It is often either the command you're running in your shell, or the shell
+itself.
+
+## Why are they useful?
+
+The terminal device lets us interact with processes in another way than just
+reading/writing text: we can send signals using control sequences.
+You probably know that pressing `Ctrl-C` interrupts the
+currently-running command. The way this works is as follows:
+1. The terminal devices receives the `Ctrl-C` sequence.
+2. The terminal sends `SIGINT`, the interrupt signal, to all processes in the
+   terminal's foreground process group.
+3. When each process that makes up the current command receives `SIGINT`, as
+   long as it does not have a handler for that signal, it will terminate.
+
+There's also the lesser-known `Ctrl-Z`, which sends `SIGSTOP` to the process
+group, pausing execution, allowing you to return to the shell.
+
+## Why can't we signal just one process?
+
+I haven't really explained why we need the _group_ part of this signalling
+mechanism. When I'm running a command, why do we need to signal multiple
+processes?
+
+Well, if you run a command containing a pipeline, subshell, command
+substitution, or process substitution, that command consists of several
+processes.
+
+> Note: What the CS 252 shell project calls a _subshell_ is really called
+> _command substitution_. A subshell is slightly different. Knowing the
+> difference isn't necessary here, but I mention this anyways to avoid
+> confusion.
+
+Let's take the example of `cat /etc/passwd | grep root`. We have one process for
+the `cat` command, and one for `grep`. A pipe connects the two, so `grep` reads
+from the output produced by `cat`.
+
+If we were to send `SIGINT` to just one of these processes, we could end up with
+some weird behavior. In this case, it would likely be just fine, but it's
+possible that we have a longer pipeline running computationally-expensive
+commands. If we only kill one of them, the others will continue to run and waste
+resources.
+
+So to fix this, the terminal sends `SIGINT` to _all_ processes in the foreground
+process group. That way, all the processes in the pipeline are interrupted,
+causing them all to terminate (unless they've handled this signal for some other
+reason, e.g. Vim).
+
+## Why can't we signal all of the processes belonging to the terminal?
+
+Because we don't want to kill the shell or its background processes.
+Let's say we run the following:
+```
+$ work file1 &
+$ work file2
+```
+Assume `work` is a command which takes a while to complete.
+If we press `Ctrl-C`, we want only the second `work` command to exit;
+the first one should continue, since it's in the background.
+Thus we can't just signal every process belonging to the terminal.
+
+# Your shell is wrong.
+
+If you're a CS 252 student, try this in your shell:
+```
+myshell>sleep 60 &
+myshell>sleep 30
+```
+Then press `Ctrl-C`, then run `ps -u`.
+You likely won't see the `sleep 60` command, as the `SIGINT` signal will have
+killed it despite it being in the background.
+
+**This is wrong.**
+
+(Don't worry; it's not your fault. It's just unfortunate that CS 252 doesn't
+mention this.)
+
+## Why does this happen?
+
+Because your shell doesn't care about process groups.
+
+When your shell runs a command, it calls `fork(2)` to spawn new processes.
+These processes will inherit the process group of the parent, and so your shell,
+as well as all foreground and background processes, belong to the same process
+group.
+
+If you still don't believe me, or the example above with the two `sleep`
+commands didn't work, try running `sleep 30` and then pressing `Ctrl-Z`.
+That will likely stop not only the `sleep` command, but also your shell.
+Again, that shouldn't happen; it should stop the `sleep` command and return to
+your shell, rather than stopping both.
+
+## What's the "right" way to do it?
+
+Great question!
+
+The correct behavior is, understandably, a little complicated to implement.
+But if you're reading this far, I assume you're interested enough to learn about
+it, and maybe even implement it yourself.
+
+### Creating the process group
+
+When our shell creates the processes for a command, it should also put them in
+the same process group.
+We can do this using the `setpgid(2)` system call.
+It takes two arguments: the PID of the process to set the PGID for, and the PID
+of the leader of the process group we want to join.
+We can use `0` to mean the current process's PID.
+
+So let's assume that in your shell, you have something like the following:
+```c
+for (int i = 0; i < _simpleCommands.size(); i++) {
+    // ...
+
+    pid_t pid = fork();
+    if (pid == 0) {  // Child
+        // ...
+        execvp(/* ... */);
+    } else if (pid > 0) {  // Parent
+        // ...
+    }
+
+    // ...
+}
+```
+
+We'll start by setting each process's PGID to the PID of the first process.
+In the child process, if `i == 0`, we'll call `setpgid(0, 0)`, otherwise we'll
+call `setpgid(0, first_pid)`.
+
+We should also only do this when running in a terminal, so we'll check if
+standard input is a terminal with `isatty(3)`.
+See the [Why only in the terminal?][why-term] section for an explanation of
+this.
+
+[why-term]: #why-only-in-the-terminal
+
+Here's our updated code:
+```c
+pid_t first_pid = 0;
+for (int i = 0; i < _simpleCommands.size(); i++) {
+    // ...
+
+    pid_t pid = fork();
+    if (pid == 0) {  // Child
+        if (isatty(0))
+            setpgid(0, first_pid);
+        // ...
+        execvp(/* ... */);
+    } else if (pid > 0) {  // Parent
+        if (i == 0)
+            first_pid = pid;
+        // ...
+    }
+
+    // ...
+}
+```
+Note here that `first_pid` is `0` for the first iteration, which `setpgid(2)`
+will interpret as the PID of the current process.
+
+> **Warning:** The above code _does not_ contain proper error handling.
+> It is up to you to do so if you choose to implement this in your shell.
+
+### Setting the process group as the foreground
+
+The above is great; we now have a new process group for each command being run.
+However, this isn't enough. Since our shell starts out as the foreground process
+group, our new process group won't be in the foreground. This means it will be
+prohibited from reading from the terminal,<sup>1</sup> and it won't receive
+signals like `SIGINT` --- only the shell will receive them, which isn't what we
+want.
+
+<sup>1</sup>&nbsp;See
+[&sect;11.1.4 of the POSIX General Terminal Interface][posix-gti] for an
+explanation.
+
+So let's fix this by setting our new process group as the foreground process
+group, but only if it's not a background command.
+
+Somewhere in your code, you probably have something like this:
+```c
+if (!_background) {
+    int wstatus;
+    waitpid(last_pid, &wstatus, 0);
+}
+```
+
+Before we wait for our children to exit, we need to set the new process group as
+the terminal's foreground process group.
+We use the `tcsetpgrp(2)` system call for this ("terminal control set process
+group"). It takes as arguments the file descriptor of the terminal and the PID
+of the process group's leader.
+
+Our new code will look like this:
+```c
+if (!_background) {
+    if (isatty(0))
+        tcsetpgrp(0, first_pid);
+
+    int wstatus;
+    waitpid(last_pid, &wstatus, 0);
+}
+```
+
+> **Warning:** Again, the above does not include proper error handling.
+
+### Bringing our shell back to the foreground
+
+If you implement the above and run your shell, you might see something like
+this:
+```
+(bash) $ ./shell
+myshell>echo hi
+hi
+myshell>
+[1]+  Stopped                 ./shell
+```
+
+What happened?
+Take a second to think about it and see if you can figure it out.
+As I mentioned before, if a process tries to read from the terminal and it isn't
+the foreground process group, it'll be suspended by the terminal.
+
+The answer is that we make the child process group the new foreground group, but
+we never make the shell the foreground group once the command finishes.
+
+We again just use `tcsetpgrp(2)` for this.
+However, there's one small hiccup:
+if we call this function while we're not the foreground process group, our
+process gets suspended, just like it does when it tries to read.
+That happens via the terminal device sending the `SIGTTOU` signal to our
+process; the default behavior when this signal is received is for the kernel to
+suspend the process.
+
+The solution for this is to block the `SIGTTOU` signal while we call
+`tcsetpgrp(2)`. Instead of using a signal handler, we'll use `sigprocmask(2)`.
+It allows us to control the process's _signal mask_, which is a set of signals
+that are being blocked, i.e. won't get received by our process at all.
+I encourage you to look at the manual page for that system call and see if you
+can figure out how to do this yourself. If you get stuck, you can refer to the
+following code.
+
+```c
+sigset_t block, old;  // Create two signal sets
+sigemptyset(&block);  // Set the block set to be empty
+sigaddset(&block, SIGTTOU);  // Add the SIGTTOU signal to the block set
+sigprocmask(SIG_BLOCK, &block, &old);  // Block the signals in the block set
+
+// ...
+
+sigprocmask(SIG_SETMASK, &old, NULL);  // Restore the old mask
+```
+
+The `sigprocmask(2)` function's first argument specifies what to do with the new
+mask. If it's `SIG_BLOCK`, the mask is added to the process's current mask,
+regardless of what the process mask already contains. If it's `SIG_SETMASK`, the
+provided mask becomes the process's new mask.
+
+In either case, if the third argument is not `NULL`, the current process mask is
+placed in the value it points to. This lets us easily save and restore the
+previous mask, so we don't mess with any other signals inadvertently.
+
+Now we can fill in the placeholder with a call to `tcsetpgrp(2)`:
+```c
+sigset_t block, old;
+sigemptyset(&block);
+sigaddset(&block, SIGTTOU);
+sigprocmask(SIG_BLOCK, &block, &old);
+
+tcsetpgrp(0, getpgid(0));
+
+sigprocmask(SIG_SETMASK, &old, NULL);
+```
+
+> **Warning:** Like before, the above does not include error handling.
+
+We can't actually be sure that our shell is the leader of the process group, so
+we call `getpgid(0)` to get the current PGID. It's a good idea to call
+`setpgid(0, 0)` at the start of your `main()` function if you're running in
+a terminal, which would allow us to replace the function call here with a `0`.
+
+Finally, this whole block should run only  
+(1) when the command is being executed in the foreground,  
+(2) when the shell is running in a terminal, and  
+(3) after the call to `waitpid(2)`, i.e. after the command being run exits,
+since that's when we return execution to our shell.
+
+### Why only in the terminal?
+
+I mentioned that we only do all of this when we're running in (specifically
+reading input from) a terminal.
+Why is that?
+
+Well, for starters, foreground and background process groups are a feature of
+terminals. If we pass a non-terminal file descriptor to `tcsetpgrp(2)`, we'll
+get an error.
+
+While we can't change the foreground process group if we're not in a terminal,
+we could still create new process groups.
+But should we?
+Take a moment to think about why this may or may not be what we want.
+
+My answer is that we _should not_ create process groups for our commands if
+we're not running in a terminal.
+Let's consider an example where we run the same commands in an terminal-attached
+shell vs. in a shell where the commands are read from a pipe or file.
+
+If we're in an interactive session of our shell (i.e. reading input from
+a terminal), we want to be able to interrupt just the command being run, but not
+the shell itself. If we run the following command...
+```
+myshell> sleep 10
+```
+...and then press `Ctrl-C`, we want `sleep` to be interrupted and control to be
+returned from our shell. This is exactly the behavior I've been describing this
+whole time.
+
+However, let's say we run our shell like this:
+```
+(bash) $ ./shell <<< 'sleep 10'
+```
+If we then hit `Ctrl-C` while this is running, we'd expect both `sleep` and
+`./shell` to be interrupted, and control to be returned to the Bash session.
+Thus we need our shell and the commands it runs to be in the same process group.
+
+The same applies for background commands. Let's run the following...
+```
+(bash) $ ./shell <<< $'sleep 10 &\nsleep 5'
+```
+...and then press `Ctrl-C`.
+Since we're trying to interrupt our shell, we also want its background commands
+to be interrupted, which is _not_ the case when running an interactive session.
+There, we should be able to interrupt the foreground command (or press `Ctrl-C`
+when at the shell prompt) without disturbing the background jobs.
+
+# Some other advantages of process groups
+
+Now that we have proper process grouping, there are a couple other things we can
+handle.
+
+## Waiting for children
+
+The `waitpid(2)` function can also accept a process group as its first argument.
+This will cause it to wait for any process in that group. Whether or not this is
+useful to you depends on how you implemented the parts of the shell which wait
+for children to exit. But it's possible, so why not mention it?
+
+To do so, you take the PID of the process group leader, negate it, and pass that
+as the argument. For example, we could do the following to wait until all
+processes in our command have exited:
+```c
+int res;
+do {
+    res = waitpid(-first_pid, NULL, 0);
+} while (res != -1);
+if (errno != ECHILD) {
+    perror("wait");
+    exit(2);
+}
+```
+For context, `waitpid(2)` will return `-1` and set `errno` to `ECHILD` when
+there are no children described by the first argument. Thus we expect `res ==
+-1` and `errno == ECHILD` once we have successfully waited for all children in
+the group.
+
+## Real job control
+
+As mentioned earlier, pressing `Ctrl-Z` will cause the terminal to send
+`SIGSTOP` to the foreground process group. You don't have to do anything to
+implement this; it happens automatically.
+
+If you create process groups for your shell's children, you'll be able to press
+`Ctrl-Z` and only the processes which make up the command being run will be
+stopped. However, you won't see another shell prompt or be able to type in
+commands, because your shell is waiting until the children exit completely.
+
+To fix this, you can simply add the `WUNTRACED` flag to the third argument
+passed to `waitpid(2)`. This will cause `waitpid(2)` to return when the
+described processes exit or are stopped.
+
+Congratulations, you now have a way to suspend processes!
+
+Resuming them is a little more challenging, but is still easily doable:
+We can keep track of the suspended commands' process group IDs (e.g. in a global
+`std::vector<pid_t>`),
+and implement a builtin command called `fg` which sends the `SIGCONT`
+signal and calls `tcsetpgrp(2)` again to make a group the foreground one.
+
+And while we're at it, we can implement the `bg` builtin, which sends `SIGCONT`
+but doesn't foreground the process group, allowing us to resume it as a
+background job.
+
+And hey, why not throw in the `jobs` builtin, which lists the
+suspended (and background) jobs.
+Oh, and maybe implement support for expanding `%n` into the PGID of the job being
+run too...
+
+Wait a minute! We've just implemented almost all of a real shell's job control
+functionality in just a few builtins. For reference, see [&sect;7 of the Bash
+manual][bash-sect7].
+
+[bash-sect7]: https://www.gnu.org/software/bash/manual/bash.html#Job-Control
+
+# That's all...
+
+Thank you for taking the time to read!
+
+If you have any feedback or questions, please do reach out to me.
+The above was figured out by reading manual pages, the POSIX
+specification, and [the source code of the Dash shell][dash]. That is to say
+there may be some mistakes or some room for improvement, and I would very much
+like to be corrected so I can fix those.
+
+[dash]: https://web.git.kernel.org/pub/scm/utils/dash/dash.git/

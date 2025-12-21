@@ -1,0 +1,231 @@
+---
+title: Full-system backups without root on Linux
+date: 2025-06-01T17:21:15-07:00
+description:
+  Using Linux capabilities to perform backups of the full system without giving
+  the backup process full root privileges.
+keywords:
+  - linux
+  - systemd
+  - rootless
+  - backup
+  - kopia
+  - restic
+  - borg
+  - borgbackup
+---
+
+When running a Linux system, you often want to create full-system backups.
+However, running processes as root is generally bad practice.
+This article looks at how to run a full-system backup as a non-root user.
+
+# Capabilities primer
+
+Linux has a concept of _capabilities_, which are fine-grained privileges that
+can be granted to processes and executable files.
+
+The `capabilities(7)` man page has a good summary:
+
+> For the purpose of performing permission checks, traditional UNIX
+> implementations distinguish two categories of processes: privileged processes
+> (whose effective user ID is 0, referred to as superuser or root), and
+> unprivileged processes (whose effective UID is non‐zero). Privileged processes
+> bypass all kernel permission checks, while unprivileged processes are subject to
+> full permission checking based on the process's credentials (usually: effective
+> UID, effective GID, and supplementary group list).
+>
+> Starting with Linux 2.2, Linux divides the privileges traditionally associated
+> with superuser into distinct units, known as capabilities, which can be
+> independently enabled and disabled. Capabilities are a per-thread attribute.
+
+## A practical example: `ping`
+
+The `ping(1)` utility is used to send ICMP ECHO packets, commonly known as
+_pings_.
+
+To do this, a raw network socket must be used. Raw sockets can inject arbitrary
+IP packets directly into the kernel's network stack, without using the
+higher-level UDP or TCP interfaces the kernel provides. This can be dangerous,
+as one could use this to, e.g., impersonate the SSH server on the machine by
+sending packets with a source port of 22 even though the real SSH server is
+already using that port.
+
+Because of this danger, using raw sockets requires higher privileges. On many
+other UNIX systems (unices?), this means only the root user can create raw
+sockets. So on those systems, the `/usr/bin/ping` utility has the set-UID bit
+set, meaning it runs as the root user no matter which user invoked the program.
+This is risky, and is something we want to avoid; if the `ping` utility had
+a bug, it could be exploited to run arbitrary code as root.
+
+On Linux, capabilities let us grant fine-grained access to privileged resources,
+such as raw network sockets. On modern Linux, the `/usr/bin/ping` program is not
+set-UID, and instead has the `CAP_NET_RAW` capability set on it, meaning that no
+matter which user runs it, the process will have the ability to create raw
+network sockets. This is safer than running as root, as even if the program has
+a bug which can be exploited to run arbitrary code, the attacker can only use
+the privileges granted by `CAP_NET_RAW`, and doesn't have full access to
+privileged resources.
+
+# Using capabilities to perform rootless backups
+
+There's a capability called `CAP_DAC_READ_SEARCH`, which effectively grants read
+permission on all files and directories, as well as execute/search permission on
+all directories. This means that a process with `CAP_DAC_READ_SEARCH` can read
+any file on the machine.
+
+There are two approaches we can use for this:
+1. Create a systemd service which runs our backup program with the
+   `CAP_DAC_READ_SEARCH` capability enabled.
+2. Create a new user account for backups, and create a copy of the backup
+   program which only that user can run, and set `CAP_DAC_READ_SEARCH` on that
+   program.
+
+The first method is a bit more limited; we can only perform the backup by
+running the systemd service. The second provides a little more flexibility, as
+we can log in as our backup user and run backups manually. Or, in my case, I use
+[Kopia](https://kopia.io), which has a convenient `kopia snapshot estimate`
+command that still needs to read all of the files, but doesn't actually perform
+a backup --- it just estimates the space/time needed to create one.
+
+The two are also not mutually exclusive. You can do one, the other, both
+together, or both separately.
+
+## Method 1 --- systemd service
+
+First, we'll create a systemd service which runs our backup program. It will
+need to be located at `/etc/systemd/system/backup.service`.[^servicename] You can use the
+following command to easily create and edit the file in the right
+location:[^cmdprefix]
+```
+# systemctl edit --full --force backup.service
+```
+
+[^servicename]: It just needs to be in this directory and end with `.service`. The `backup` part of the name is arbitrary, however the service and the timer created later will need to have the same name.
+
+### Service specification
+
+In the file, write the following:
+```systemd
+[Unit]
+Description=Run a full-system backup
+Wants=network.target
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=<command to create backup>  # See below
+RemainAfterExit=true
+TimeoutStartSec=5h
+TimeoutStopSec=2min
+Restart=no
+DynamicUser=true  # See below
+AmbientCapabilities=CAP_DAC_READ_SEARCH
+```
+
+You can reference the `systemd.unit(5)` and `systemd.service(5)` man page for
+reference on the options used here.
+
+For the `ExecStart=` setting, you'll need to provide the command used to run
+your backup. It must be an absolute path.
+For example, I use `/usr/bin/kopia snapshot create /`.
+
+Depending on your backup solution, you may need to provide some type of
+configuration or login information, e.g. a password for the location to which
+your backups are being uploaded. You can use the `Environment=` and/or
+`EnvironmentFile=` directives to set environment variables. Or if you need more
+flexibility, you can write a shell script to configure and perform your backup,
+then use that as the `ExecStart=` command.
+
+The `DynamicUser=` option will create a new user and group to use for the
+execution of this service. If you want to use a static pre-existing user
+instead, replace this line with `User=<username>`.
+
+### Timer specification
+
+To run our backup service occasionally, we'll create a systemd timer unit to
+trigger it.
+
+Run `systemctl edit --full --force backup.timer` to create the timer unit, and
+write the following:
+```systemd
+[Unit]
+Description=Run backup daily
+
+[Timer]
+OnCalendar=*-*-* 01:00:00
+Persistent=true
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target
+```
+
+See `systemd.timer(5)` for timer unit options, and `systemd.time(7)` for the
+format of calendar time specifications (for the `OnCalendar=` value).
+
+### Enabling our units
+
+We can start and enable[^startenable] the timer using the following command:
+```
+# systemctl enable --now backup.timer
+```
+
+[^startenable]: Starting the timer means making it active now, and enabling the timer means making it start automatically on boot.
+
+## Method 2 --- dedicated backup user
+
+### Installing necessary tools
+
+For this method, we'll need some utilities for dealing with capabilities
+installed. Specifically, we need `setcap(8)`. On Debian, we can install it with
+the `libcap2-bin` package:[^cmdprefix]
+```
+# apt install libcap2-bin
+```
+
+### Creating the user
+
+Next, we'll create a UNIX user account to be in charge of our backups:
+```
+# useradd -m -c 'Backup user' backup
+```
+
+### Setting up the specialized executable
+
+Now we'll give our backup user a copy of the program used to perform backups,
+and set the permissions so only they can execute it. For me, the program is
+`/usr/bin/kopia`, but if you're using a different software, you'll have to
+adjust the commands appropriately.
+```
+[backup]$ mkdir ~/bin
+[backup]$ cp /usr/bin/kopia ~/bin/kopia
+[backup]$ chmod 0700 ~/bin/kopia
+```
+
+Now, for the important part, we'll set the `CAP_DAC_READ_SEARCH` capability on
+the copy of the executable.
+```
+# setcap cap_dac_read_search=+ep ~backup/bin/kopia
+```
+
+> **Warning:** This will only work for programs which are native executables.
+> This means that [Borg](https://borgbackup.org), which is a Python script,
+> won't work. If you use Borg and want to know how to make this work, [send me
+> an email](mailto:kian@kasad.com) and I'll add details on how to do it.
+
+Now we can edit the `backup` user's `~/.profile` script to add the `~/bin`
+directory to the `PATH`, so that running `kopia` will use `~/bin/kopia` and not
+`/usr/bin/kopia`. We'll add the following:
+```sh
+if [ -d "$HOME/bin" ]
+then
+    export PATH="$HOME/bin:$PATH"
+fi
+```
+
+And now our unprivileged `backup` user can perform full-system backups using
+`kopia`! If desired, this method can be combined with
+[Method 1](#method-1-----systemd-service) to automatically schedule backups
+using a systemd timer.
+
+[^cmdprefix]: The prefix character (e.g., `$` or `#`) in front of the command has a meaning. See [the Arch Wiki's explanation](https://wiki.archlinux.org/title/Help:Reading#Root,_regular_user_or_another_user).

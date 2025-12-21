@@ -1,0 +1,233 @@
+---
+title: "Start Docker containers on-demand with systemd socket activation"
+description:
+  An easy tutorial on automatically starting Docker containers when needed.
+  Useful for stopping resource-intensive services when they aren't in use,
+  without requiring extra steps from the end user.
+date: 2024-06-17T17:21:36-07:00
+---
+
+If you have a [Docker](https://docker.com) container which is running all the time but is used infrequently,
+it may be a good idea to start the container only when a connection is received.
+This is particularly useful for resource-intensive servers.
+In my case, I use this for a Minecraft server,
+which can take several gigabytes of memory even when idle,
+so I want to keep it running as little as possible.
+
+This tutorial demonstrates how to start Docker containers on-demand on Linux
+using [systemd](https://systemd.io).
+
+## 1. Create the Docker container
+
+First, we need to create the Docker container.
+I will be doing this using a Docker Compose file, because it makes it configuration simpler.
+
+All you need is a `docker-compose.yml` file which defines the container you need.
+If you already have one, great!
+
+We just need to change one thing:
+Make the container listen on a port **other than the port you want the service on.**
+
+For example, if I want a Docker container running a web server hosted on port 80,
+the container should actually listen on another port. In this case I'll use 81.
+Below is the `docker-compose.yml` file which creates a container running an Nginx web server,
+with port 81 on the host forwarded to port 80 on the container.
+
+```yaml
+# docker-compose.yml
+
+services:
+  webserver:
+    image: nginx
+    restart: unless-stopped
+    ports:
+      - '81:80' # Important: Don't listen on port 80!
+```
+
+## 2. Understanding socket activation
+
+Systemd's socket activation can get a little confusing.
+To ease the confusion, let's first take a look at what it is.
+
+Socket activation is a feature provided by systemd.
+It allows you do make systemd listen on a socket instead of leaving your service running.
+When systemd receives a connection, it will start the service and hand the socket over
+to the now-running service so it can handle the connection.
+
+This is great!
+The only problem is that the service being started needs to know how to take the socket over from systemd.
+Docker can't do that.
+Instead, we'll need to use a proxy in between, which can take the socket from systemd and forward the traffic to Docker.
+Luckily, systemd provides us with such a proxy: `systemd-socket-proxyd`.
+
+## 3. Create the systemd units
+
+### `container.service`
+
+This is the simplest of the units.
+It's just a regular systemd service which will start our Docker Compose stack.
+
+Here's the service file.
+This should go in `/etc/systemd/system/` and can be named anything, as long as it ends with `.service`.
+
+```systemd
+# /etc/systemd/system/container.service
+
+[Unit]
+Description=Start our Docker Compose stack
+
+# Stop this service when all other services which depend on it have stopped.
+StopWhenUnneeded=true
+
+[Service]
+# Set the working directory to the directory which contains your docker-compose.yml file.
+# This should be an absolute path.
+WorkingDirectory=/path/to/your/docker-compose/file
+
+ExecStart=/usr/bin/docker compose up
+```
+
+Normally, you'll see an `[Install]` section in systemd services.
+Here, we actually don't want one.
+We don't want systemd to keep our service running all the time.
+You'll see how it gets started later.
+
+### `proxy-to-container.socket`
+
+This is the socket unit (see `systemd.socket(5)`) which tells systemd to create a socket and listen for connections.
+
+Here, use the port you want your service to appear on.
+For my example of a web server, I want it to listen on port 80, so I'll use 80 here.
+
+Like before, this file should be installed in `/etc/systemd/system/`.
+It can be named anything, as long as it ends with `.socket`.
+
+```systemd
+# /etc/systemd/system/proxy-to-container.socket
+
+[Unit]
+Description=Socket listener for our Docker Compose service(s)
+
+[Socket]
+# TCP port to listen on.
+# See systemd.socket(5) for details on how to specify an IP address or interface,
+# or how to use other protocols like UDP.
+ListenStream=80
+
+[Install]
+WantedBy=sockets.target
+```
+
+### `proxy-to-container.service`
+
+This is the most complicated of the units.
+This service will need to start the proxy daemon and connect it to our container.
+
+The name of this service matters.
+It **must have the same name** as the socket unit created in the last step.
+This is how systemd knows they're related.
+
+```systemd
+# /etc/systemd/system/proxy-to-container.service
+
+[Unit]
+Description=Proxy service for our Docker Compose service(s)
+
+# This service needs the socket on which it will listen, so we must depend on the socket unit
+Requires=proxy-to-container.socket
+After=proxy-to-container.socket
+
+# This service also requires the service which starts our Docker Compose stack
+Requires=container.service
+After=container.service
+
+# We want to consider this service "part of" container.service,
+# i.e. we want this proxy service to be started whenever the container service is requested.
+# Otherwise, the container will start and listen on port 81,
+# and nothing will be forwarding traffic from port 80 to the container.
+PartOf=container.service
+
+[Service]
+Type=notify
+
+# See the paragraph below for details on this line.
+ExecStart=/usr/lib/systemd/systemd-socket-proxyd --exit-idle-time=10min localhost:81
+```
+
+Let's take a look at the arguments to `systemd-socket-proxyd` in the last line.
+
+The last argument is the most important;
+it tells the proxy what address to connect to and forward traffic to/from.
+In our Docker Compose file, we forwarded port 81 on the host to 80 on the Docker container,
+so we want to connect to port 81 on the current machine, i.e. `localhost:81`.
+
+*Note: You could also use the container's IP address and avoid publishing the port,
+but that requires either static IP configuration or dynamically detecting the container's address,
+which is too complicated for this tutorial.*
+
+The other argument to the proxy daemon is `--exit-idle-time=10min`.
+This tells it to exit after 10 minutes of being idle, i.e. not receiving any connections.
+You can change this duration to meet your needs,
+or remove the option entirely to prevent the service from stopping automatically.
+See `systemd-socket-proxyd(8)` for details on how to format the time duration.
+
+Again, we don't give this service an `[Install]` section, because we don't want it running all the time.
+We only want it to be activated when `proxy-to-container.socket` is activated.
+
+## 4. Starting and enabling our new services
+
+*Note: All of the commands in this section will likely need to be run as root.*
+
+First, run this command to prompt systemd to load the new units we've created:
+```
+# systemctl daemon-reload
+```
+
+Then, all we need to do is enable the socket unit:
+```
+# systemctl enable --now proxy-to-container.socket
+```
+The `--now` option tells systemd to also start the unit.
+It's equivalent to running `enable` followed by `start`.
+
+## 5. Understanding how the units work together
+
+You may notice that we never told systemd when to start `proxy-to-container.service`.
+We enabled the socket, but not the service.
+
+Well, you may have guessed the answer when I hinted earlier that the proxy service and socket must have the same name.
+When systemd receives a connection for a `.socket` unit, it automatically starts the `.service` unit with the same name
+and passes it the socket.
+(This can be overridden using `Service=`. See `systemd.socket(5)`.)
+
+Okay, let's imagine our service is not running, and a user sends a request to port 80.
+Here's what happens (in order):
+
+1. The socket systemd has created and listened to for `proxy-to-container.socket` receives a connection.
+2. Systemd attempts to start `proxy-to-container.service`.
+3. Because that service depends on `container.service`, systemd will first start `container.service`.
+   This will bring up our Docker Compose stack, which starts listening on port 81.
+4. Now that the dependencies are met, `proxy-to-container.service` starts. This runs the `systemd-socket-proxyd(8)` daemon.
+5. `systemd-socket-proxyd` takes the socket from systemd and receives the connection from our user. It forwards all the data to `localhost:81`.
+6. The container is listening on port 81, so it receives the request and sends a response.
+7. `systemd-socket-proxyd` forwards traffic both directions, sending the response back to the user.
+
+Great!
+We've started a Docker service on-demand when it is needed.
+
+One more thing: what happens if we don't get any requests for a while?
+
+1. Because we specified `--exit-idle-time` earlier, `systemd-socket-proxyd(8)` will automatically stop after the configured amount of time.
+2. Systemd notices this and marks `proxy-to-container.service` as stopped.
+3. Systemd notices that because `proxy-to-container.service` is now stopped, nothing depends on `container.service` anymore.
+4. Because we set `StopWhenUnneeded=true` on `container.service`, it will now be stopped by systemd.
+5. Nothing happened to `proxy-to-container.socket`. Only the service exited, not the socket.
+   Thus systemd is still listening for new connections and is ready to re-start the services when one is received.
+
+<hr />
+
+## That's all...
+
+If you found this article useful, consider
+[checking out other articles I've written](/blog),
+or [take a look at my public projects on GitHub](https://github.com/kdkasad).

@@ -2,7 +2,7 @@
 title: How a React mistake took down our whole backend
 description:
   A story of how we tracked down a bug in a Purdue Hackers website that
-  repeatedly took down our entire backend.
+  repeatedly caused our entire backend to become unresponsive.
 date: 2025-11-08
 draft: false
 ---
