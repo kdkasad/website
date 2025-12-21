@@ -3,9 +3,12 @@ import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import icon from "astro-icon";
 
+const baseUrl = process.env.BASE_URL;
+if (!baseUrl) throw new Error("BASE_URL is not set");
+
 // https://astro.build/config
 export default defineConfig({
-    site: "https://kasad.com",
+    site: baseUrl,
     env: {
         // Defines the schema for environment variables
         schema: {

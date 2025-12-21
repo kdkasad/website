@@ -4,6 +4,9 @@ on:
   push: {}
   pull_request: {}
 
+env:
+  BASE_URL: ${{ vars.BASE_URL }}
+
 jobs:
   prettier:
     name: Check formatting
