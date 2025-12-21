@@ -3,7 +3,7 @@ import AccentedTitleLayout from "../../../../../layouts/AccentedTitleLayout.astr
 
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
-import { getBlogPostParams } from "../../../../../lib/blog";
+import { getBlogPostParams, getBlogPostPath } from "../../../../../lib/blog";
 
 // Returns list of blog posts to generate static pages
 export const getStaticPaths = (async () => {
@@ -16,6 +16,14 @@ export const getStaticPaths = (async () => {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+
+// Get all posts, sorted by date in increasing order
+const allPosts = (await getCollection("blog")).toSorted(
+    (a, b) => a.data.date.getTime() - b.data.date.getTime(),
+);
+const thisPostIndex = allPosts.findIndex((p) => p.id === post.id);
+const prevPost = allPosts[thisPostIndex - 1];
+const nextPost = allPosts[thisPostIndex + 1];
 ---
 
 <AccentedTitleLayout
@@ -49,6 +57,40 @@ const { Content } = await render(post);
         class="prose prose-lg prose-stone prose-headings:underline prose-headings:decoration-accent prose-headings:decoration-4 prose-headings:tracking-tight prose-h1:decoration-6 prose-h1:mt-12 prose-h1:mb-4 prose-a:decoration-accent prose-a:decoration-2 prose-a:hover:decoration-3 prose-code:before:content-none prose-code:after:content-none mx-auto mt-12 w-full max-w-[75ch] px-8 leading-normal lg:mt-16 [&>section.footnotes]:mt-16 [&>section.footnotes]:border-t [&>section.footnotes]:pt-12"
     >
         <Content />
+    </div>
+
+    {/* Previous/next post links */}
+    <div class="bg-accent text-background mt-16 w-full p-8 shadow-lg">
+        <div
+            class="mx-auto grid max-w-screen-lg grid-cols-1 gap-8 sm:grid-cols-2 sm:flex-row lg:grid-cols-3"
+        >
+            {
+                [prevPost, nextPost].map((p) => (
+                    <div class:list={[p === nextPost && "lg:col-3"]}>
+                        {p && (
+                            <a
+                                class:list={[
+                                    "hover:underline",
+                                    p === nextPost && "text-right",
+                                ]}
+                                href={getBlogPostPath(p)}
+                            >
+                                <div class="text-xl font-bold decoration-2">
+                                    {p === prevPost ? (
+                                        <>
+                                            &LeftArrow;&nbsp;&nbsp;Previous post
+                                        </>
+                                    ) : (
+                                        <>Next post&nbsp;&nbsp;&RightArrow;</>
+                                    )}
+                                </div>
+                                <div>{p.data.title}</div>
+                            </a>
+                        )}
+                    </div>
+                ))
+            }
+        </div>
     </div>
 </AccentedTitleLayout>
 
