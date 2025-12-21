@@ -3,11 +3,29 @@ import AccentedTitleLayout from "../../layouts/AccentedTitleLayout.astro";
 
 import { getCollection } from "astro:content";
 import { getBlogPostPath } from "../../lib/blog";
+import type { CollectionEntry } from "astro:content";
 
-// Get posts and sort by date in descending order
-const posts = (await getCollection("blog")).toSorted(
-    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
-);
+// Group posts by year
+type Post = CollectionEntry<"blog">;
+const postsByYear: Map<number, Post[]> = new Map();
+(await getCollection("blog")).forEach((post) => {
+    const year = post.data.date.getUTCFullYear();
+    if (!postsByYear.has(year)) {
+        postsByYear.set(year, []);
+    }
+    postsByYear.get(year)!.push(post);
+});
+// Sort posts in each group by date in descending order (most recent first)
+postsByYear
+    .values()
+    .forEach((list) =>
+        list.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+    );
+// Get years with posts in descending order (most recent first)
+const sortedYears = postsByYear
+    .keys()
+    .toArray()
+    .toSorted((a, b) => b - a);
 ---
 
 <AccentedTitleLayout title="Blog | Kian Kasad">
@@ -18,30 +36,51 @@ const posts = (await getCollection("blog")).toSorted(
             time to time.
         </p>
     </div>
-    <div class="mx-auto max-w-screen-lg px-8 pt-16 sm:px-16">
-        <ul>
-            {
-                posts.map((post, i) => (
-                    <>
-                        {i > 0 && <hr class="text-secondary/30 mt-8" />}
-                        <li class="not-first:mt-8">
-                            <a
-                                href={getBlogPostPath(post)}
-                                class="decoration-accent text-3xl font-bold decoration-4 hover:underline"
-                            >
-                                {post.data.title}
-                            </a>
-                            <div class="mt-2 text-sm text-stone-600">
-                                {post.data.date.toLocaleDateString(undefined, {
-                                    dateStyle: "long",
-                                    timeZone: "UTC",
-                                })}
-                            </div>
-                            <p class="mt-2 text-lg">{post.data.description}</p>
-                        </li>
-                    </>
-                ))
-            }
-        </ul>
+    <div class="mx-auto mb-24 max-w-screen-lg pt-16 pr-8 pl-4 sm:px-16 sm:pl-8">
+        {
+            sortedYears.map((year, i) => (
+                <div
+                    class:list={[
+                        "flex flex-row gap-4 sm:gap-8",
+                        i > 0 && "mt-8",
+                    ]}
+                >
+                    <div class="flex flex-none flex-col items-center">
+                        <div class="text-secondary bg-background sticky top-4 -mt-4 flex-none px-4 [writing-mode:sideways-lr]">
+                            {year}
+                        </div>
+                        <div class="border-secondary/50 w-0 flex-1 rounded-sm border-[0.5px]" />
+                    </div>
+                    <ul class="flex grow flex-col gap-8">
+                        {i > 0 && <hr class="text-secondary/30" />}
+                        {postsByYear.get(year)!.map((post, i) => (
+                            <>
+                                {i > 0 && <hr class="text-secondary/30" />}
+                                <li>
+                                    <a
+                                        href={getBlogPostPath(post)}
+                                        class="decoration-accent text-3xl font-bold decoration-4 hover:underline"
+                                    >
+                                        {post.data.title}
+                                    </a>
+                                    <div class="mt-2 text-sm text-stone-600">
+                                        {post.data.date.toLocaleDateString(
+                                            undefined,
+                                            {
+                                                dateStyle: "long",
+                                                timeZone: "UTC",
+                                            },
+                                        )}
+                                    </div>
+                                    <p class="mt-2 text-lg">
+                                        {post.data.description}
+                                    </p>
+                                </li>
+                            </>
+                        ))}
+                    </ul>
+                </div>
+            ))
+        }
     </div>
 </AccentedTitleLayout>
