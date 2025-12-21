@@ -16,16 +16,11 @@ const postsByYear: Map<number, Post[]> = new Map();
     postsByYear.get(year)!.push(post);
 });
 // Sort posts in each group by date in descending order (most recent first)
-postsByYear
-    .values()
-    .forEach((list) =>
-        list.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
-    );
+Array.from(postsByYear.values()).forEach((list) =>
+    list.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+);
 // Get years with posts in descending order (most recent first)
-const sortedYears = postsByYear
-    .keys()
-    .toArray()
-    .toSorted((a, b) => b - a);
+const sortedYears = Array.from(postsByYear.keys()).toSorted((a, b) => b - a);
 ---
 
 <AccentedTitleLayout title="Blog | Kian Kasad">
