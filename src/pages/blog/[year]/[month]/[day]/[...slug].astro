@@ -1,5 +1,6 @@
 ---
 import AccentedTitleLayout from "../../../../../layouts/AccentedTitleLayout.astro";
+import { SEO } from "astro-seo";
 
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
@@ -26,18 +27,57 @@ const prevPost = allPosts[thisPostIndex - 1];
 const nextPost = allPosts[thisPostIndex + 1];
 ---
 
-<AccentedTitleLayout
-    title={post.data.title}
-    author={post.data.author}
-    description={post.data.description}
->
+<AccentedTitleLayout>
+    <SEO
+        slot="head"
+        title={post.data.title}
+        titleTemplate="%s | Kian's blog"
+        description={post.data.description}
+        openGraph={{
+            basic: {
+                title: post.data.title,
+                type: "article",
+                image: new URL(
+                    "/assets/laptoppfp2-offwhite-cropped-small.png",
+                    Astro.url,
+                ).href,
+            },
+            image: {
+                url: new URL(
+                    "/assets/laptoppfp2-offwhite-cropped-small.png",
+                    Astro.url,
+                ).href,
+                height: 600,
+                width: 600,
+                type: "image/png",
+                alt: "Kian's profile picture of a cartoon frog typing on a laptop",
+            },
+            article: {
+                publishedTime: post.data.date.toISOString(),
+            },
+            optional: {
+                description: post.data.description,
+            },
+        }}
+        twitter={{
+            title: post.data.title,
+            description: post.data.description,
+            image: new URL(
+                "/assets/laptoppfp2-offwhite-cropped-small.png",
+                Astro.url,
+            ).href,
+            imageAlt:
+                "Kian's profile picture of a cartoon frog typing on a laptop",
+        }}
+    />
+
     <div slot="title" class="*:not-first:mt-4 *:not-first:lg:mt-8">
         <div>
             <a class="hover:underline" href="/blog">
                 &LeftArrow;&nbsp;&nbsp;All posts
             </a>
         </div>
-        <div class="text-4xl sm:text-6xl font-black text-shadow-xs">
+        <div class="text-4xl font-black text-shadow-xs sm:text-6xl">
             {post.data.title}
         </div>
         <div class="flex justify-between">

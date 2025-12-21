@@ -3,14 +3,11 @@ import "../styles/global.css";
 
 import "@fontsource-variable/raleway";
 
-import PageSEO from "../components/PageSEO.astro";
-import { type Props as PageSEOProps } from "../components/PageSEO.astro";
-
-export interface Props extends PageSEOProps {
+export interface Props {
     extraBodyClasses?: string;
 }
 
-const { extraBodyClasses = "", ...seoProps } = Astro.props;
+const { extraBodyClasses = "" } = Astro.props;
 ---
 
 <!doctype html>
@@ -19,7 +16,6 @@ const { extraBodyClasses = "", ...seoProps } = Astro.props;
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width" />
         <meta name="generator" content={Astro.generator} />
-        <PageSEO {...seoProps} />
         <slot name="head" />
     </head>
     <body

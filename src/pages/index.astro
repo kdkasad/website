@@ -8,6 +8,7 @@ import GitHubContributions from "../components/GitHubContributions.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import ProjectsSection from "../components/sections/ProjectsSection.astro";
+import { SEO } from "astro-seo";
 
 const headingStyle =
     "decoration-accent mb-4 text-3xl font-black underline decoration-4";
@@ -20,7 +21,45 @@ const headings = [
 ];
 ---
 
-<BaseLayout title="Portfolio | Kian Kasad">
+<BaseLayout>
+    <SEO
+        slot="head"
+        title="Portfolio | Kian Kasad"
+        description="My portfolio, blog, and maybe other things at some point."
+        openGraph={{
+            basic: {
+                title: "Kian Kasad",
+                type: "website",
+                image: new URL(
+                    "/assets/laptoppfp2-offwhite-cropped-small.png",
+                    Astro.url,
+                ).href,
+            },
+            image: {
+                url: new URL(
+                    "/assets/laptoppfp2-offwhite-cropped-small.png",
+                    Astro.url,
+                ).href,
+                height: 600,
+                width: 600,
+                type: "image/png",
+                alt: "Profile picture of a cartoon frog typing on a laptop",
+            },
+            optional: {
+                description:
+                    "My portfolio, blog, and maybe other things at some point.",
+            },
+        }}
+        twitter={{
+            title: "Kian Kasad",
+            image: new URL(
+                "/assets/laptoppfp2-offwhite-cropped-small.png",
+                Astro.url,
+            ).href,
+            imageAlt: "Profile picture of a cartoon frog typing on a laptop",
+        }}
+    />
+
     {/* Container for first screenful of content */}
     <div class="flex min-h-screen flex-col justify-between">
         <Header />
