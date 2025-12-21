@@ -1,20 +1,47 @@
 ---
-import ContentLayout from "../../layouts/ContentLayout.astro";
+import AccentedTitleLayout from "../../layouts/AccentedTitleLayout.astro";
 
 import { getCollection } from "astro:content";
 import { getBlogPostPath } from "../../lib/blog";
 
-const posts = await getCollection("blog");
+// Get posts and sort by date in descending order
+const posts = (await getCollection("blog")).toSorted(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
 ---
 
-<ContentLayout title="Blog | Kian Kasad">
-    <ul>
-        {
-            posts.map((post) => (
-                <li>
-                    <a href={getBlogPostPath(post)}>{post.data.title}</a>
-                </li>
-            ))
-        }
-    </ul>
-</ContentLayout>
+<AccentedTitleLayout title="Blog | Kian Kasad">
+    <div slot="title">
+        <div class="text-6xl font-black text-shadow-xs">Blog</div>
+        <p class="mt-8">
+            A place where I write about various programming-related things from
+            time to time.
+        </p>
+    </div>
+    <div class="mx-auto max-w-screen-lg px-8 pt-16 sm:px-16">
+        <ul>
+            {
+                posts.map((post, i) => (
+                    <>
+                        {i > 0 && <hr class="text-secondary/30 mt-8" />}
+                        <li class="not-first:mt-8">
+                            <a
+                                href={getBlogPostPath(post)}
+                                class="decoration-accent text-3xl font-bold decoration-4 hover:underline"
+                            >
+                                {post.data.title}
+                            </a>
+                            <div class="mt-2 text-sm text-stone-600">
+                                {post.data.date.toLocaleDateString(undefined, {
+                                    dateStyle: "long",
+                                    timeZone: "UTC",
+                                })}
+                            </div>
+                            <p class="mt-2 text-lg">{post.data.description}</p>
+                        </li>
+                    </>
+                ))
+            }
+        </ul>
+    </div>
+</AccentedTitleLayout>
