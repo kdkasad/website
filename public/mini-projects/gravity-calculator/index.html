@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang=en>
+	<head>
+		<meta charset="utf-8">
+
+		<title>Gravitational Force Calculator</title>
+
+		<meta name="author" content="Kian Kasad">
+		<meta name="description" content="Gravitational force calculator">
+		<meta name="theme-color" content="#1d1e20" />
+
+		<link rel="icon" href="/global/images/icon.svg" type="image/svg+xml" />
+		<link rel="stylesheet" href="style.css" />
+		<script defer src="script.js"></script>
+
+		<!-- KaTeX -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css" integrity="sha384-R4558gYOUz8mP9YWpZJjofhk+zx0AS11p36HnD2ZKj/6JR5z27gSSULCNHIRReVs" crossorigin="anonymous">
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js" integrity="sha384-z1fJDqw8ZApjGO3/unPWUPsIymfsJmyrDVWC8Tv/a1HeOtGmkwNd/7xUS0Xcnvsx" crossorigin="anonymous"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/auto-render.min.js" integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR" crossorigin="anonymous"></script>
+	</head>
+
+	<body>
+		<div class="container">
+
+			<header>
+				<h1>Gravitational Force Calculator</h1>
+			</header>
+
+			<form id="form">
+				<div>
+				<h3>Mass of object 1 ($ m_1 $)</h3>
+				<input type="number" name="m1" min="0" value="10" />
+				$ \times 10 \text{ \^{} } $
+				<input type="number" class="exp" name="m1exp" min="0" value="0" />
+				$ \text{ kilograms} $
+				</div>
+
+				<div>
+				<h3>Mass of object 2 ($ m_2 $)</h3>
+				<input type="number" name="m2" min="0" value="10" />
+				$ \times 10 \text{ \^{} } $
+				<input type="number" class="exp" name="m2exp" min="0" value="0" />
+				$ \text{ kilograms} $
+				</div>
+
+				<div>
+				<h3>Distance between object centers ($ d $)</h3>
+				<input type="number" name="d" min="0" value="10" />
+				$ \times 10 \text{ \^{} } $
+				<input type="number" class="exp" name="dexp" min="0" value="0" />
+				$ \text{ meters} $
+				</div>
+
+				<div>
+				<h3>Gravitational constant ($G$)</h3>
+				<input type="number" name="G" min="0" value="6.67" />
+				$ \times 10 \text{ \^{} } $
+				<input type="number" class="exp" name="Gexp" min="0" value="-11" />
+				$ \text{ N}\,\text{m}^2/\text{kg}^2 $
+				</div>
+			</form>
+
+			<h2>Result</h2>
+			<div class="indent" id="result">
+				<h3>Rounded</h3>
+				<div id="res-rounded">
+				</div>
+				<h3>Precise</h3>
+				<div id="res-precise">
+				</div>
+			</div>
+
+			<div id="formula">
+				<h2>Gravitational force formula</h2>
+				<div class="indent">
+				$$
+				F = G \cdot \frac{m_1\,m_2}{d^2}
+				$$
+				where $G$ is the gravitational constant in
+				units of $
+				\frac{\text{N}\,\text{m}^2}{\text{kg}^2} $.
+				$$
+				G = 6.67 \times 10^{-11}\  \frac{\text{ N m}^2}{\text{kg}^2}
+				$$
+				</div>
+
+				<h2>Derivations from gravitational force formula</h2>
+				<div class="indent">
+				<h3>Acceleration due to gravity</h3>
+				$$
+				a = G \cdot \frac{M}{r^2}
+				$$
+				<h3>Orbital velocity</h3>
+				$$
+				v = \sqrt{ G \cdot \frac{ M }{ r } }
+				$$
+				<div>
+				$M$ is the mass of the body being accelerated
+				towards or orbited in the above two formulas.
+				$r$ is the distance between the centers of the
+				two bodies. For the orbital velocity formula,
+				it is the average orbital radius.
+				</div>
+				</div>
+			</div>
+
+		</div>
+
+	</body>
+</html>

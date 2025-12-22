@@ -1,0 +1,144 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+}
+
+div.container {
+	padding: 2rem 3rem;
+	margin: auto;
+}
+
+form {
+	margin-bottom: 3rem;
+}
+
+form div.label {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: baseline;
+}
+
+.textbox {
+	display: block;
+	width: 100%;
+	padding: 0.5rem 1rem;
+	font-size: 1.25rem;
+	font-weight: 400;
+	color: #212529;
+	border: 1px solid #ced4da;
+	appearance: none;
+	border-radius: 0.5rem;
+	font-family: 'Courier New', Courier, monospace;
+	line-height: 1.5;
+	min-height: calc(1.5em + (1rem + 2px)); /* 1 line */
+	max-height: calc(18 * 1.5em + (1rem + 2px)); /* 18 lines */
+	overflow: auto;
+}
+.textbox:focus {
+	border-color: #86b7fe;
+	box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+	outline: none;
+}
+
+.form-control {
+	margin-bottom: 1rem;
+}
+
+.share-btn {
+	color: #555;
+	height: 1em;
+	width: 1em;
+}
+.share-btn .trigger:hover {
+	color: #222;
+	cursor: pointer;
+}
+
+.share-btn > svg {
+	height: 100%;
+	width: 100%;
+}
+
+.tooltip {
+	position: relative;
+}
+.tooltip .tooltip-content {
+	/* visibility: hidden; */
+	opacity: 0%;
+	width: 10em;
+	background-color: #444;
+	color: #fff;
+	text-align: center;
+	border-radius: 8px;
+	padding: 6px;
+	position: absolute;
+	z-index: 1;
+	bottom: 150%;
+	left: 50%;
+	margin-left: -5em;
+	box-shadow: 0 0 5px 0px #444;
+	transition: opacity 0.5s;
+	cursor: default;
+}
+.tooltip .trigger:hover + .tooltip-content {
+	/* visibility: visible; */
+	opacity: 100%;
+}
+.tooltip .tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #444 transparent transparent transparent;
+}
+
+pre#outbox {
+	background-color: #e9ecef;
+}
+
+
+
+/* BREAKPOINT DEFINITIONS */
+@media (max-width: 576px) {
+	div.container {
+		width: 100%;
+	}
+}
+
+@media (min-width: 576px) {
+	div.container {
+		width: 540px;
+	}
+}
+
+@media (min-width: 768px) {
+	div.container {
+		width: 720px;
+	}
+}
+
+@media (min-width: 992px) {
+	div.container {
+		width: 960px;
+	}
+}
+
+@media (min-width: 1200px) {
+	div.container {
+		width: 1140px;
+	}
+}
+
+@media (min-width: 1400px) {
+	div.container {
+		width: 1320px;
+	}
+}
