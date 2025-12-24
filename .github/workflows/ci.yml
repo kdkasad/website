@@ -57,7 +57,7 @@ jobs:
   deploy:
     name: Deploy site
     needs: build
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref == 'refs/heads/master' }}
     concurrency:
       group: ${{ github.workflow }}-deploy
       cancel-in-progress: true
