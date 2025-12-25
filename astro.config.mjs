@@ -2,6 +2,8 @@
 import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import icon from "astro-icon";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeSlug from "rehype-slug";
 
 const baseUrl = process.env.BASE_URL;
 if (!baseUrl) throw new Error("BASE_URL is not set");
@@ -30,4 +32,13 @@ export default defineConfig({
         plugins: [tailwindcss()],
     },
     integrations: [icon()],
+    markdown: {
+        rehypePlugins: [
+            rehypeSlug,
+            [
+                rehypeAutolinkHeadings,
+                { behavior: "wrap", properties: { className: "not-prose" } },
+            ],
+        ],
+    },
 });
