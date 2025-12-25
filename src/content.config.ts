@@ -85,6 +85,7 @@ export const collections = {
             description: z.string().nonempty(),
             date: z.coerce.date(),
             draft: z.boolean().default(false),
+            toc: z.enum(["collapse", "expand", "none"]).default("collapse"),
         }),
     }),
 };

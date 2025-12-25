@@ -1,0 +1,15 @@
+---
+import TOCItem, { type HeadingTreeNode } from "./TOCItem.astro";
+
+export interface Props {
+    headings: HeadingTreeNode[];
+}
+
+const { headings } = Astro.props;
+---
+
+<ol
+    class="ms-4 list-disc leading-relaxed [ol_ol_ol]:list-[square] [ol_ol]:list-[circle] [ol_ol]:ps-2 [ol_ol]:sm:ps-4"
+>
+    {headings.map((heading) => <TOCItem {heading} />)}
+</ol>

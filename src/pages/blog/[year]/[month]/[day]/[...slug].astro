@@ -5,6 +5,7 @@ import { SEO } from "astro-seo";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 import { getBlogPostParams, getBlogPostPath } from "../../../../../lib/blog";
+import BlogPostTOC from "../../../../../components/BlogPostTOC.astro";
 
 // Returns list of blog posts to generate static pages
 export const getStaticPaths = (async () => {
@@ -16,7 +17,7 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 // Get all posts, sorted by date in increasing order
 const allPosts = (await getCollection("blog")).toSorted(
@@ -94,8 +95,13 @@ const nextPost = allPosts[thisPostIndex + 1];
     </div>
 
     <div
-        class="prose sm:prose-lg prose-stone prose-headings:underline prose-headings:decoration-accent prose-headings:decoration-4 prose-headings:tracking-tight prose-h1:decoration-6 prose-h1:mt-12 prose-h1:mb-4 prose-a:decoration-accent prose-a:decoration-2 prose-a:hover:decoration-3 prose-code:before:content-none prose-code:after:content-none mx-auto mt-12 w-full max-w-[75ch] px-8 sm:leading-normal lg:mt-16 [&>section.footnotes]:mt-16 [&>section.footnotes]:border-t [&>section.footnotes]:pt-12"
+        class="prose sm:prose-lg prose-stone prose-headings:underline prose-headings:decoration-accent prose-headings:decoration-4 prose-headings:tracking-tight prose-h1:decoration-6 prose-h1:mt-12 prose-h1:mb-4 prose-a:decoration-accent prose-a:decoration-2 prose-a:hover:decoration-3 prose-code:before:content-none prose-code:after:content-none text-primary mx-auto mt-12 w-full max-w-[75ch] px-8 sm:leading-normal lg:mt-16 [&>section.footnotes]:mt-16 [&>section.footnotes]:border-t [&>section.footnotes]:pt-12"
     >
+        {
+            post.data.toc !== "none" && headings.length > 0 && (
+                <BlogPostTOC open={post.data.toc === "expand"} {headings} />
+            )
+        }
         <Content />
     </div>
 

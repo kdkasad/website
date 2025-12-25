@@ -1,0 +1,22 @@
+---
+import type { MarkdownHeading } from "astro";
+import TOCItemList from "./TOCItemList.astro";
+
+export interface HeadingTreeNode {
+    heading: MarkdownHeading;
+    children: HeadingTreeNode[];
+}
+
+export interface Props {
+    heading: HeadingTreeNode;
+}
+
+const {
+    heading: { heading, children },
+} = Astro.props;
+---
+
+<li>
+    <a href={"#" + heading.slug} class="hover:underline">{heading.text}</a>
+    {children.length > 0 && <TOCItemList headings={children} />}
+</li>

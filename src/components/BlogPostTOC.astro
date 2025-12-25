@@ -1,0 +1,41 @@
+---
+import TOCItem from "./bits/TOCItem.astro";
+import TOCItemList from "./bits/TOCItemList.astro";
+
+import type { MarkdownHeading } from "astro";
+import { type HeadingTreeNode } from "./bits/TOCItem.astro";
+
+export interface Props {
+    open?: boolean;
+    headings: MarkdownHeading[];
+}
+
+function headingListToTree(headings: MarkdownHeading[]): HeadingTreeNode[] {
+    if (headings.length === 0) return [];
+    const first = headings[0];
+    let end = headings
+        .slice(1)
+        .findIndex((heading) => heading.depth <= first.depth);
+    end = end === -1 ? headings.length : end + 1;
+    const children = headings.slice(1, end);
+    const childTree = headingListToTree(children);
+    return [
+        { heading: first, children: childTree },
+        ...headingListToTree(headings.slice(end)),
+    ];
+}
+
+const { headings, open = false } = Astro.props;
+const headingTree = headingListToTree(headings);
+console.log(headingTree);
+---
+
+<details
+    class="not-prose mb-16 rounded-lg border border-stone-300 bg-stone-200 px-4 py-2 open:pb-4"
+>
+    <summary class="cursor-pointer">Table of contents</summary>
+    <hr class="my-2 text-stone-300" />
+    <nav class="text-base">
+        <TOCItemList headings={headingTree} />
+    </nav>
+</details>

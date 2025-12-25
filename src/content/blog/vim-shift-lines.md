@@ -3,6 +3,7 @@ title: Trick to shift lines in Vim
 date: 2021-05-21T20:47:02-07:00
 description:
   A Vim configuration tip to make it easier to move selected lines up/down.
+toc: none
 ---
 
 It's easy to select lines in visual mode, delete them, then paste them a few
