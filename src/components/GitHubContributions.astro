@@ -34,6 +34,7 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
     id="github-calendar"
     class="block bg-transparent py-2"
     data-start-date={firstDay?.date.getTime()}
+    style="display:block;"
 >
     <div
         class="text-secondary flex h-8 flex-row items-end pl-8 font-mono text-lg"
@@ -118,7 +119,10 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
             // title={`${day.contributionCount} commits on ${dateFormatterWeekday.format(day.date)}`}
         }
     }
-    window.customElements.define("github-calendar", GitHubCalendarElement);
+    setTimeout(() => {
+        window.customElements.define("github-calendar", GitHubCalendarElement);
+        console.debug("github-calendar registered");
+    }, 2000);
 </script>
 
 {
