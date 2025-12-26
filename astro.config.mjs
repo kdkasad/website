@@ -3,7 +3,7 @@ import { defineConfig, envField } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import icon from "astro-icon";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypeSlug from "rehype-slug";
+import { rehypeHeadingIds } from "@astrojs/markdown-remark";
 
 import mdx from "@astrojs/mdx";
 
@@ -36,7 +36,7 @@ export default defineConfig({
     integrations: [icon(), mdx()],
     markdown: {
         rehypePlugins: [
-            rehypeSlug,
+            rehypeHeadingIds,
             [
                 rehypeAutolinkHeadings,
                 { behavior: "wrap", properties: { className: "not-prose" } },
