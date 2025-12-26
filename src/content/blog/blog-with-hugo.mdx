@@ -1,16 +1,16 @@
 ---
 title: Creating a blog With Hugo
 date: 2020-08-22T15:04:11-07:00
-description:
-  An overview of how to use the Hugo static site generator (SSG) to
-  write a blog.
+description: An overview of how to use the Hugo static site generator (SSG) to
+    write a blog.
 ---
 
-**Note:**
-Since this post was written, I have transitioned my site away from Hugo.
-While the information here may still apply, it is likely outdated.
+import Callout from "../../components/Callout.astro";
 
----
+<Callout style="note">
+    Since this post was written, I have transitioned my site away from Hugo.
+    While the information here may still apply, it is likely outdated.
+</Callout>
 
 Web development can be tricky, especially if you want your site to look nice.
 That's where [Hugo](https://gohugo.io) comes in.
@@ -27,12 +27,15 @@ Check out the [install guide](https://gohugo.io/getting-started/installing) for 
 ## Creating a site
 
 Starting a site is easy. To create the Hugo directory structure in the current directory, run
+
 ```sh
 hugo new site . -f yaml
 ```
+
 You can choose between YAML, TOML, and JSON for your config file. Change the `-f` option accordingly.
 
 This will create the following skeleton:
+
 ```sh
 .
 ├── archetypes/
@@ -57,6 +60,7 @@ The theme you choose in the next step may have extra options to choose from.
 For a list of all default options, [see here](https://gohugo.io/getting-started/configuration/#all-configuration-settings).
 
 Here's the `config.yaml` file for this site:
+
 ```yaml linenos=inline
 baseURL: https://kasad.com/blog/
 languageCode: en-us
@@ -69,13 +73,13 @@ enableGitInfo: true
 enableRobotsTXT: true
 ```
 
-`baseURL`: The URL where your site will be published  
-`languageCode`: the default site language  
-`title`: The title of the entire site  
-`author`: The site author. Multiple can be specified.  
-`theme`: Theme to use (see next step).  
-`enableEmoji`: Whether to convert emoji codes to emojis (e.g. `:smi​le:` &rarr; :smile:)  
-`enableGitInfo`: For hugo sites versioned with Git, use the commit date as the 'last modified' time for each page.  
+`baseURL`: The URL where your site will be published
+`languageCode`: the default site language
+`title`: The title of the entire site
+`author`: The site author. Multiple can be specified.
+`theme`: Theme to use (see next step).
+`enableEmoji`: Whether to convert emoji codes to emojis (e.g. `:smi​le:` &rarr; :smile:)
+`enableGitInfo`: For hugo sites versioned with Git, use the commit date as the 'last modified' time for each page.
 `enableRobotsTXT`: Generate a `robots.txt` file.
 
 ## Choosing a theme
@@ -86,10 +90,14 @@ This site uses the [Paper](https://github.com/nanxiaobei/hugo-paper) theme by �
 
 Once you find the theme you want, place it into the `themes` folder.
 
-> If you are using Git to version your Hugo site, you can include your theme as a [submodule](/blog/2020/08/22/blog-with-hugo).
+<Callout style="note">
+    If you are using Git to version your Hugo site, you can include your theme
+    as a [submodule](/blog/2020/08/22/git-submodules).
+</Callout>
 
 To use the theme in your site, set the `theme` key in your configuration file.
 For example, if your theme is located in `themes/my-sweet-theme`, your config file would contain this line:
+
 ```yaml
 theme: my-sweet-theme
 ```
@@ -100,6 +108,7 @@ Be sure to check if your theme has any extra options to configure.
 
 Page content goes in the `content` folder.
 Hugo makes it easy to create a new page:
+
 ```sh
 hugo new article.md
 ```
@@ -110,6 +119,7 @@ This is called 'front matter'.
 [See here](https://gohugo.io/content-management/front-matter) for a more complete guide.
 
 A basic page will have something like the following:
+
 ```yaml
 ---
 title: "Article Title Here"
@@ -129,9 +139,11 @@ Add some filler text below the front matter. We'll come back to the content late
 ## Serving your website locally for testing
 
 Now that you have a basic page set up, it's time to transform it into a website:
+
 ```sh
 hugo server -D
 ```
+
 will start a web server on port 1313.
 The `-D` option tells it to include drafts.
 This is useful for testing.
@@ -149,6 +161,7 @@ Your `article.md` file became `<server url>/article/`.
 You can set the `uglyurls` option to `true` in your config file, which will change the behaviour and create `<server url>/article.html` instead.
 
 You can create subfolders inside of content, too. Try creating a page using
+
 ```sh
 hugo new blog/post-1.md
 ```
@@ -176,6 +189,7 @@ I'll go over two of them, but the full list is [located here](https://gohugo.io/
 
 A figure is some content (usually an image) and an optional caption.
 To create a captioned image using Hugo, use this shortcode:
+
 ```md
 {​{< figure src="/image.png" title="Caption text" >}}
 ```
@@ -205,22 +219,26 @@ You could serve your website using `hugo server`, but you probably want to creat
 Static content is what you're probably used to seeing in web development: HTML, CSS, JavaScript, images, etc.
 
 To compile your website, run
+
 ```sh
 hugo
 ```
+
 If you want to include draft pages, add the `-D` flag.
 
 This will put your compiled content in the `public` directory.
 You change this by setting the `publishDir` option in your configuration file.
 
 For example,
+
 ```yaml
 publishDir: ../
 ```
+
 will put the compiled content in the directory above your hugo directory.
 I do this with my website, so I can have a `hugo` folder that gets ignored by the web server, while the content stays accessible in the parent directory.
 
--------------
+---
 
 Hopefully you now know how to create a basic hugo site. Be sure to read the [Hugo documentation](https://gohugo.io/documentation/), which covers everything you could wonder about Hugo.
 I also recommend taking a look at the official [getting started guide](https://gohugo.io/categories/getting-started), which is slightly more in-depth than this guide.

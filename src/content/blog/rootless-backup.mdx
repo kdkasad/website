@@ -2,18 +2,20 @@
 title: Full-system backups without root on Linux
 date: 2025-06-01T17:21:15-07:00
 description:
-  Using Linux capabilities to perform backups of the full system without giving
-  the backup process full root privileges.
+    Using Linux capabilities to perform backups of the full system without giving
+    the backup process full root privileges.
 keywords:
-  - linux
-  - systemd
-  - rootless
-  - backup
-  - kopia
-  - restic
-  - borg
-  - borgbackup
+    - linux
+    - systemd
+    - rootless
+    - backup
+    - kopia
+    - restic
+    - borg
+    - borgbackup
 ---
+
+import Callout from "../../components/Callout.astro";
 
 When running a Linux system, you often want to create full-system backups.
 However, running processes as root is generally bad practice.
@@ -74,6 +76,7 @@ all directories. This means that a process with `CAP_DAC_READ_SEARCH` can read
 any file on the machine.
 
 There are two approaches we can use for this:
+
 1. Create a systemd service which runs our backup program with the
    `CAP_DAC_READ_SEARCH` capability enabled.
 2. Create a new user account for backups, and create a copy of the backup
@@ -96,6 +99,7 @@ First, we'll create a systemd service which runs our backup program. It will
 need to be located at `/etc/systemd/system/backup.service`.[^servicename] You can use the
 following command to easily create and edit the file in the right
 location:[^cmdprefix]
+
 ```
 # systemctl edit --full --force backup.service
 ```
@@ -105,6 +109,7 @@ location:[^cmdprefix]
 ### Service specification
 
 In the file, write the following:
+
 ```systemd
 [Unit]
 Description=Run a full-system backup
@@ -147,6 +152,7 @@ trigger it.
 
 Run `systemctl edit --full --force backup.timer` to create the timer unit, and
 write the following:
+
 ```systemd
 [Unit]
 Description=Run backup daily
@@ -166,6 +172,7 @@ format of calendar time specifications (for the `OnCalendar=` value).
 ### Enabling our units
 
 We can start and enable[^startenable] the timer using the following command:
+
 ```
 # systemctl enable --now backup.timer
 ```
@@ -179,6 +186,7 @@ We can start and enable[^startenable] the timer using the following command:
 For this method, we'll need some utilities for dealing with capabilities
 installed. Specifically, we need `setcap(8)`. On Debian, we can install it with
 the `libcap2-bin` package:[^cmdprefix]
+
 ```
 # apt install libcap2-bin
 ```
@@ -186,6 +194,7 @@ the `libcap2-bin` package:[^cmdprefix]
 ### Creating the user
 
 Next, we'll create a UNIX user account to be in charge of our backups:
+
 ```
 # useradd -m -c 'Backup user' backup
 ```
@@ -196,6 +205,7 @@ Now we'll give our backup user a copy of the program used to perform backups,
 and set the permissions so only they can execute it. For me, the program is
 `/usr/bin/kopia`, but if you're using a different software, you'll have to
 adjust the commands appropriately.
+
 ```
 [backup]$ mkdir ~/bin
 [backup]$ cp /usr/bin/kopia ~/bin/kopia
@@ -204,18 +214,22 @@ adjust the commands appropriately.
 
 Now, for the important part, we'll set the `CAP_DAC_READ_SEARCH` capability on
 the copy of the executable.
+
 ```
 # setcap cap_dac_read_search=+ep ~backup/bin/kopia
 ```
 
-> **Warning:** This will only work for programs which are native executables.
-> This means that [Borg](https://borgbackup.org), which is a Python script,
-> won't work. If you use Borg and want to know how to make this work, [send me
-> an email](mailto:kian@kasad.com) and I'll add details on how to do it.
+<Callout style="warning">
+    This will only work for programs which are native executables. This means
+    that [Borg](https://borgbackup.org), which is a Python script, won't work.
+    If you use Borg and want to know how to make this work, [send me an
+    email](mailto:kian@kasad.com) and I'll add details on how to do it.
+</Callout>
 
 Now we can edit the `backup` user's `~/.profile` script to add the `~/bin`
 directory to the `PATH`, so that running `kopia` will use `~/bin/kopia` and not
 `/usr/bin/kopia`. We'll add the following:
+
 ```sh
 if [ -d "$HOME/bin" ]
 then

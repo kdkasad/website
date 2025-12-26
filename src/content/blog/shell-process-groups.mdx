@@ -2,13 +2,17 @@
 title: UNIX Process Groups
 date: 2025-03-30T17:56:08-04:00
 description:
-  An exploration of UNIX shell process groups, written to expand on the
-  information covered in Purdue's CS 252 (Systems Programming) course.
+    An exploration of UNIX shell process groups, written to expand on the
+    information covered in Purdue's CS 252 (Systems Programming) course.
 ---
 
-> Note: This was written for students in Purdue's CS 252 course.
-> Hopefully the information will be useful to others as well, but there may be
-> some references that don't make sense.
+import Callout from "../../components/Callout.astro";
+
+<Callout style="note">
+    This was written for students in Purdue's CS 252 course. Hopefully the
+    information will be useful to others as well, but there may be some
+    references that don't make sense.
+</Callout>
 
 Hello fellow CS 252 student!
 
@@ -53,6 +57,7 @@ The terminal device lets us interact with processes in another way than just
 reading/writing text: we can send signals using control sequences.
 You probably know that pressing `Ctrl-C` interrupts the
 currently-running command. The way this works is as follows:
+
 1. The terminal devices receives the `Ctrl-C` sequence.
 2. The terminal sends `SIGINT`, the interrupt signal, to all processes in the
    terminal's foreground process group.
@@ -72,10 +77,11 @@ Well, if you run a command containing a pipeline, subshell, command
 substitution, or process substitution, that command consists of several
 processes.
 
-> Note: What the CS 252 shell project calls a _subshell_ is really called
-> _command substitution_. A subshell is slightly different. Knowing the
-> difference isn't necessary here, but I mention this anyways to avoid
-> confusion.
+<Callout style="note">
+    What the CS 252 shell project calls a _subshell_ is really called _command
+    substitution_. A subshell is slightly different. Knowing the difference
+    isn't necessary here, but I mention this anyways to avoid confusion.
+</Callout>
 
 Let's take the example of `cat /etc/passwd | grep root`. We have one process for
 the `cat` command, and one for `grep`. A pipe connects the two, so `grep` reads
@@ -96,10 +102,12 @@ reason, e.g. Vim).
 
 Because we don't want to kill the shell or its background processes.
 Let's say we run the following:
+
 ```
 $ work file1 &
 $ work file2
 ```
+
 Assume `work` is a command which takes a while to complete.
 If we press `Ctrl-C`, we want only the second `work` command to exit;
 the first one should continue, since it's in the background.
@@ -108,10 +116,12 @@ Thus we can't just signal every process belonging to the terminal.
 # Your shell is wrong.
 
 If you're a CS 252 student, try this in your shell:
+
 ```
 myshell>sleep 60 &
 myshell>sleep 30
 ```
+
 Then press `Ctrl-C`, then run `ps -u`.
 You likely won't see the `sleep 60` command, as the `SIGINT` signal will have
 killed it despite it being in the background.
@@ -154,6 +164,7 @@ of the leader of the process group we want to join.
 We can use `0` to mean the current process's PID.
 
 So let's assume that in your shell, you have something like the following:
+
 ```c
 for (int i = 0; i < _simpleCommands.size(); i++) {
     // ...
@@ -182,6 +193,7 @@ this.
 [why-term]: #why-only-in-the-terminal
 
 Here's our updated code:
+
 ```c
 pid_t first_pid = 0;
 for (int i = 0; i < _simpleCommands.size(); i++) {
@@ -202,11 +214,14 @@ for (int i = 0; i < _simpleCommands.size(); i++) {
     // ...
 }
 ```
+
 Note here that `first_pid` is `0` for the first iteration, which `setpgid(2)`
 will interpret as the PID of the current process.
 
-> **Warning:** The above code _does not_ contain proper error handling.
-> It is up to you to do so if you choose to implement this in your shell.
+<Callout style="warning">
+    The above code _does not_ contain proper error handling. It is up to you to
+    do so if you choose to implement this in your shell.
+</Callout>
 
 ### Setting the process group as the foreground
 
@@ -217,14 +232,14 @@ prohibited from reading from the terminal,<sup>1</sup> and it won't receive
 signals like `SIGINT` --- only the shell will receive them, which isn't what we
 want.
 
-<sup>1</sup>&nbsp;See
-[&sect;11.1.4 of the POSIX General Terminal Interface][posix-gti] for an
-explanation.
+<sup>1</sup>&nbsp;See [&sect;11.1.4 of the POSIX General Terminal
+Interface][posix-gti] for an explanation.
 
 So let's fix this by setting our new process group as the foreground process
 group, but only if it's not a background command.
 
 Somewhere in your code, you probably have something like this:
+
 ```c
 if (!_background) {
     int wstatus;
@@ -239,6 +254,7 @@ group"). It takes as arguments the file descriptor of the terminal and the PID
 of the process group's leader.
 
 Our new code will look like this:
+
 ```c
 if (!_background) {
     if (isatty(0))
@@ -249,12 +265,15 @@ if (!_background) {
 }
 ```
 
-> **Warning:** Again, the above does not include proper error handling.
+<Callout style="warning">
+    Again, the above does not include proper error handling.
+</Callout>
 
 ### Bringing our shell back to the foreground
 
 If you implement the above and run your shell, you might see something like
 this:
+
 ```
 (bash) $ ./shell
 myshell>echo hi
@@ -308,6 +327,7 @@ placed in the value it points to. This lets us easily save and restore the
 previous mask, so we don't mess with any other signals inadvertently.
 
 Now we can fill in the placeholder with a call to `tcsetpgrp(2)`:
+
 ```c
 sigset_t block, old;
 sigemptyset(&block);
@@ -319,16 +339,18 @@ tcsetpgrp(0, getpgid(0));
 sigprocmask(SIG_SETMASK, &old, NULL);
 ```
 
-> **Warning:** Like before, the above does not include error handling.
+<Callout style="warning">
+    Like before, the above does not include error handling.
+</Callout>
 
 We can't actually be sure that our shell is the leader of the process group, so
 we call `getpgid(0)` to get the current PGID. It's a good idea to call
 `setpgid(0, 0)` at the start of your `main()` function if you're running in
 a terminal, which would allow us to replace the function call here with a `0`.
 
-Finally, this whole block should run only  
-(1) when the command is being executed in the foreground,  
-(2) when the shell is running in a terminal, and  
+Finally, this whole block should run only
+(1) when the command is being executed in the foreground,
+(2) when the shell is running in a terminal, and
 (3) after the call to `waitpid(2)`, i.e. after the command being run exits,
 since that's when we return execution to our shell.
 
@@ -355,25 +377,31 @@ shell vs. in a shell where the commands are read from a pipe or file.
 If we're in an interactive session of our shell (i.e. reading input from
 a terminal), we want to be able to interrupt just the command being run, but not
 the shell itself. If we run the following command...
+
 ```
 myshell> sleep 10
 ```
+
 ...and then press `Ctrl-C`, we want `sleep` to be interrupted and control to be
 returned from our shell. This is exactly the behavior I've been describing this
 whole time.
 
 However, let's say we run our shell like this:
+
 ```
 (bash) $ ./shell <<< 'sleep 10'
 ```
+
 If we then hit `Ctrl-C` while this is running, we'd expect both `sleep` and
 `./shell` to be interrupted, and control to be returned to the Bash session.
 Thus we need our shell and the commands it runs to be in the same process group.
 
 The same applies for background commands. Let's run the following...
+
 ```
 (bash) $ ./shell <<< $'sleep 10 &\nsleep 5'
 ```
+
 ...and then press `Ctrl-C`.
 Since we're trying to interrupt our shell, we also want its background commands
 to be interrupted, which is _not_ the case when running an interactive session.
@@ -395,6 +423,7 @@ for children to exit. But it's possible, so why not mention it?
 To do so, you take the PID of the process group leader, negate it, and pass that
 as the argument. For example, we could do the following to wait until all
 processes in our command have exited:
+
 ```c
 int res;
 do {
@@ -405,6 +434,7 @@ if (errno != ECHILD) {
     exit(2);
 }
 ```
+
 For context, `waitpid(2)` will return `-1` and set `errno` to `ECHILD` when
 there are no children described by the first argument. Thus we expect `res ==
 -1` and `errno == ECHILD` once we have successfully waited for all children in

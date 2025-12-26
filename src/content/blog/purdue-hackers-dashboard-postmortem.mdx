@@ -1,11 +1,13 @@
 ---
 title: How a React mistake took down our whole backend
 description:
-  A story of how we tracked down a bug in a Purdue Hackers website that
-  repeatedly caused our entire backend to become unresponsive.
+    A story of how we tracked down a bug in a Purdue Hackers website that
+    repeatedly caused our entire backend to become unresponsive.
 date: 2025-11-08
 draft: false
 ---
+
+import Callout from "../../components/Callout.astro";
 
 Recently, at [Purdue Hackers][puhack]' weekly Hack Nights,
 we've been seeing an issue where every service on our
@@ -81,6 +83,7 @@ any internal errors it encounters.[^errors]
 [^errors]: By internal errors, we mean errors within Nginx, not just problems that cause HTTP errors. For example, the infamous HTTP 404 error, which means a page wasn't found, doesn't necessarily mean something is wrong with Nginx. Most likely, a client tried to request a page that just doesn't exist. So the error logs only record errors that happen _inside_ Nginx.
 
 The access log looked something like this, with hundreds of thousands of entries for `GET /doorbell`:
+
 ```
 10.186.92.108 - - [08/Nov/2025:07:51:15 +0000] "GET /doorbell HTTP/1.1" 503 592 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
 10.186.92.108 - - [08/Nov/2025:07:51:15 +0000] "GET /doorbell HTTP/1.1" 503 592 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
@@ -95,6 +98,7 @@ The access log looked something like this, with hundreds of thousands of entries
 ```
 
 And in the error log, Lillith found this, again repeated many times:
+
 ```
 Nov 08 01:50:08 vulcan nginx[2192612]: 2025/11/08 01:50:08 [alert] 2192612#2192612: *972425 512 worker_connections are not enough while connecting to upstream, client: 10.186.92.108, server: api.purduehackers.com, request: "GET /doorbell HTTP/1.1", upstream: "http://127.0.0.1:4226/doorbell", host: "api.purduehackers.com"
 ```
@@ -138,15 +142,15 @@ This would prevent whatever is broken from affecting other users, but it
 would still result in that client facing issues, as it wouldn't be able to
 send the requests it needs to.
 
-> Side note (except it's not on the side):
->
-> We (Lillith) did end up implementing a per-client connection limit,
-> as it's a good
-> idea in general. Even if we fix this issue, we don't want a malicious user to
-> be able to hog all the connections and prevent legitimate users from accessing
-> Vulcan's services.
->
-> Now back to the digging...
+<Callout style="note" title="Side note (except it's not on the side)">
+    We (Lillith) did end up implementing a per-client connection limit, as it's a
+    good idea in general. Even if we fix this issue, we don't want a malicious user
+    to be able to hog all the connections and prevent legitimate users from
+    accessing Vulcan's services.
+
+    Now back to the digging...
+
+</Callout>
 
 Instead of just adjusting the connection limits,
 we need to figure out what is causing so many
@@ -156,7 +160,6 @@ of requests specifically for the `/doorbell` API endpoint.
 
 [thread pool]: https://en.wikipedia.org/wiki/Thread_pool
 [worker_connections]: https://nginx.org/en/docs/ngx_core_module.html#worker_connections
-
 
 ## Doorbells and WebSockets
 
@@ -210,12 +213,13 @@ to see if we could confirm and fix the issue.
 I cloned the repository which stores the code for our
 Hack Night dashboard and doorbell website, searched through
 it a bit, and found this:
+
 ```ts
 const ws = useRef<ReconnectingWebSocket | null>(null);
 // ...
 useEffect(() => {
     ws.current = new ReconnectingWebSocket(
-        "wss://api.purduehackers.com/doorbell"
+        "wss://api.purduehackers.com/doorbell",
     );
 
     ws.current.onopen = () => setConnectionState(ConnectionState.Connected);
@@ -237,6 +241,7 @@ Could this be the issue?
 
 I looked at the documentation for `reconnecting-websocket`
 and found this list of available options:
+
 ```ts
 type Options = {
     WebSocket?: any; // WebSocket constructor, if none provided, defaults to global WebSocket
@@ -255,10 +260,12 @@ type Options = {
 `minReconnectionDelay` and `maxReconnectionDelay` certainly
 look promising. But after scrolling down a bit, I found the
 list of default values, which contained this:
+
 ```ts
 maxReconnectionDelay: 10000,
 minReconnectionDelay: 1000 + Math.random() * 4000,
 ```
+
 The default settings (which we're using since we don't provide
 our own) already limit reconnections to happen at most once
 per second!
@@ -275,10 +282,11 @@ If you're familiar with the web framework [React],
 you may have noticed the issue already.
 Take a look at the code again, and notice that we're creating
 the WebSocket inside of this `useEffect()` function:
+
 ```ts
 useEffect(() => {
     ws.current = new ReconnectingWebSocket(
-        "wss://api.purduehackers.com/doorbell"
+        "wss://api.purduehackers.com/doorbell",
     );
 
     ws.current.onopen = () => setConnectionState(ConnectionState.Connected);
@@ -307,6 +315,7 @@ a new WebSocket connection will be opened.
 
 Now this is certainly the issue.
 Let's imagine what might happen because of this bug:
+
 1. We open the dashboard.
 2. Every second, it creates a new WebSocket connection.
 3. After just an hour, we already have 3,600 connections open!
@@ -315,10 +324,8 @@ Let's imagine what might happen because of this bug:
 6. Those closed connections will attempt to reconnect, causing a flood of thousands of reconnection requests which will all fail because we've reached the connection limit.
 7. Any other requests to other services will _also_ fail because Nginx has no connections in its budget to handle those.
 
-
 [React]: https://react.dev
 [useEffect]: https://react.dev/reference/react/useEffect
-
 
 # The fix
 
@@ -329,6 +336,7 @@ The fix for this is... drumroll please... a measly _4 extra characters_!
 
 All we need to do is insert `, []` at the end of our
 `useEffect()` call:
+
 ```diff
  useEffect(() => {
      ws.current = new ReconnectingWebSocket(
@@ -364,6 +372,7 @@ were indeed creating an endless amount of WebSocket
 connections, and that this tiny fix did indeed fix the problem.
 
 # Come join us!
+
 Like what you've read?
 If you're a student at Purdue,
 [come join Purdue Hackers][puhack]!

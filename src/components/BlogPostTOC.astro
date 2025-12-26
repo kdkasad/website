@@ -27,7 +27,6 @@ function headingListToTree(headings: MarkdownHeading[]): HeadingTreeNode[] {
 
 const { headings, open = false } = Astro.props;
 const headingTree = headingListToTree(headings);
-console.log(headingTree);
 ---
 
 <details

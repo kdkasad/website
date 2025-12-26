@@ -5,6 +5,8 @@ import icon from "astro-icon";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 
+import mdx from "@astrojs/mdx";
+
 const baseUrl = process.env.BASE_URL;
 if (!baseUrl) throw new Error("BASE_URL is not set");
 
@@ -31,7 +33,7 @@ export default defineConfig({
     vite: {
         plugins: [tailwindcss()],
     },
-    integrations: [icon()],
+    integrations: [icon(), mdx()],
     markdown: {
         rehypePlugins: [
             rehypeSlug,

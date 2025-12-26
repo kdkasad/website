@@ -1,11 +1,13 @@
 ---
 title: "Start Docker containers on-demand with systemd socket activation"
 description:
-  An easy tutorial on automatically starting Docker containers when needed.
-  Useful for stopping resource-intensive services when they aren't in use,
-  without requiring extra steps from the end user.
+    An easy tutorial on automatically starting Docker containers when needed.
+    Useful for stopping resource-intensive services when they aren't in use,
+    without requiring extra steps from the end user.
 date: 2024-06-17T17:21:36-07:00
 ---
+
+import Callout from "../../components/Callout.astro";
 
 If you have a [Docker](https://docker.com) container which is running all the time but is used infrequently,
 it may be a good idea to start the container only when a connection is received.
@@ -37,11 +39,11 @@ with port 81 on the host forwarded to port 80 on the container.
 # docker-compose.yml
 
 services:
-  webserver:
-    image: nginx
-    restart: unless-stopped
-    ports:
-      - '81:80' # Important: Don't listen on port 80!
+    webserver:
+        image: nginx
+        restart: unless-stopped
+        ports:
+            - "81:80" # Important: Don't listen on port 80!
 ```
 
 ## 2. Understanding socket activation
@@ -161,9 +163,11 @@ it tells the proxy what address to connect to and forward traffic to/from.
 In our Docker Compose file, we forwarded port 81 on the host to 80 on the Docker container,
 so we want to connect to port 81 on the current machine, i.e. `localhost:81`.
 
-*Note: You could also use the container's IP address and avoid publishing the port,
-but that requires either static IP configuration or dynamically detecting the container's address,
-which is too complicated for this tutorial.*
+<Callout style="note">
+    You could also use the container's IP address and avoid publishing the port,
+    but that requires either static IP configuration or dynamically detecting
+    the container's address, which is too complicated for this tutorial.
+</Callout>
 
 The other argument to the proxy daemon is `--exit-idle-time=10min`.
 This tells it to exit after 10 minutes of being idle, i.e. not receiving any connections.
@@ -176,17 +180,23 @@ We only want it to be activated when `proxy-to-container.socket` is activated.
 
 ## 4. Starting and enabling our new services
 
-*Note: All of the commands in this section will likely need to be run as root.*
+<Callout style="note">
+    Note: All of the commands in this section will likely need to be run as
+    root.
+</Callout>
 
 First, run this command to prompt systemd to load the new units we've created:
+
 ```
 # systemctl daemon-reload
 ```
 
 Then, all we need to do is enable the socket unit:
+
 ```
 # systemctl enable --now proxy-to-container.socket
 ```
+
 The `--now` option tells systemd to also start the unit.
 It's equivalent to running `enable` followed by `start`.
 

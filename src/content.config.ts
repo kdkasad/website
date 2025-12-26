@@ -78,7 +78,7 @@ export const collections = {
     }),
 
     blog: defineCollection({
-        loader: glob({ pattern: "**/*.md", base: "src/content/blog" }),
+        loader: glob({ pattern: "**/*.md{,x}", base: "src/content/blog" }),
         schema: z.object({
             title: z.string().nonempty(),
             author: z.string().nonempty().default("Kian Kasad"),

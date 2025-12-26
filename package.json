@@ -13,6 +13,7 @@
         "fmt": "prettier --write ."
     },
     "dependencies": {
+        "@astrojs/mdx": "^4.3.13",
         "@fontsource-variable/raleway": "^5.2.8",
         "@iconify-json/devicon": "^1.2.51",
         "@iconify-json/fa7-solid": "^1.2.2",
