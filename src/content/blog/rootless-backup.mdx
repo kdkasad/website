@@ -88,12 +88,12 @@ running the systemd service. The second provides a little more flexibility, as
 we can log in as our backup user and run backups manually. Or, in my case, I use
 [Kopia](https://kopia.io), which has a convenient `kopia snapshot estimate`
 command that still needs to read all of the files, but doesn't actually perform
-a backup --- it just estimates the space/time needed to create one.
+a backup — it just estimates the space/time needed to create one.
 
 The two are also not mutually exclusive. You can do one, the other, both
 together, or both separately.
 
-## Method 1 --- systemd service
+## Method 1 — systemd service
 
 First, we'll create a systemd service which runs our backup program. It will
 need to be located at `/etc/systemd/system/backup.service`.[^servicename] You can use the
@@ -179,7 +179,7 @@ We can start and enable[^startenable] the timer using the following command:
 
 [^startenable]: Starting the timer means making it active now, and enabling the timer means making it start automatically on boot.
 
-## Method 2 --- dedicated backup user
+## Method 2 — dedicated backup user
 
 ### Installing necessary tools
 
@@ -239,7 +239,7 @@ fi
 
 And now our unprivileged `backup` user can perform full-system backups using
 `kopia`! If desired, this method can be combined with
-[Method 1](#method-1-----systemd-service) to automatically schedule backups
+[Method 1](#method-1--systemd-service) to automatically schedule backups
 using a systemd timer.
 
 [^cmdprefix]: The prefix character (e.g., `$` or `#`) in front of the command has a meaning. See [the Arch Wiki's explanation](https://wiki.archlinux.org/title/Help:Reading#Root,_regular_user_or_another_user).

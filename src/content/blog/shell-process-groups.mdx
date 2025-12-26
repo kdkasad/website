@@ -229,7 +229,7 @@ The above is great; we now have a new process group for each command being run.
 However, this isn't enough. Since our shell starts out as the foreground process
 group, our new process group won't be in the foreground. This means it will be
 prohibited from reading from the terminal,<sup>1</sup> and it won't receive
-signals like `SIGINT` --- only the shell will receive them, which isn't what we
+signals like `SIGINT` — only the shell will receive them, which isn't what we
 want.
 
 <sup>1</sup>&nbsp;See [&sect;11.1.4 of the POSIX General Terminal
