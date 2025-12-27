@@ -1,6 +1,6 @@
 ---
+import UmamiTracker from "../components/UmamiTracker.astro";
 import "../styles/global.css";
-
 import "@fontsource-variable/raleway";
 
 export interface Props {
@@ -17,6 +17,7 @@ const { extraBodyClasses = "" } = Astro.props;
         <meta name="viewport" content="width=device-width" />
         <meta name="generator" content={Astro.generator} />
         <link rel="icon" href="/assets/laptoppfp2-offwhite-circle-small.png" />
+        <UmamiTracker />
         <slot name="head" />
     </head>
     <body
