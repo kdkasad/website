@@ -4,6 +4,7 @@ import {
     getGitHubContributionWeeks,
     type ContributionInfo,
 } from "../lib/githubContributions";
+import LocalizedDate from "./LocalizedDate.astro";
 
 function getTileColorClass(contributionCount: number) {
     return contributionCount >= 20
@@ -22,12 +23,6 @@ const contributionInfo: ContributionInfo = SKIP_REMOTE
     : await getGitHubContributionWeeks("kdkasad", new Date("2020-01-01"));
 const firstDay = contributionInfo.weeks[0]?.find((day) => day !== null);
 const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
-const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-});
 ---
 
 <github-calendar
@@ -48,7 +43,7 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
             {
                 firstDay && (
                     <div class="text-secondary rotate-180 text-center font-mono text-lg [writing-mode:vertical-rl]">
-                        {dateFormatterJustDate.format(firstDay.date)}
+                        <LocalizedDate utc date={firstDay.date} />
                     </div>
                 )
             }
@@ -75,7 +70,7 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
             {
                 lastDay && (
                     <div class="text-secondary text-center font-mono text-lg [writing-mode:vertical-rl]">
-                        {dateFormatterJustDate.format(lastDay.date)}
+                        <LocalizedDate date={lastDay.date} utc />
                     </div>
                 )
             }
@@ -91,19 +86,13 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
     */
 }
 <script>
-    // Datetime formatter with local locale since we're running client-side
-    const dateFormatterWeekday = Intl.DateTimeFormat(undefined, {
-        weekday: "long",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        timeZone: "UTC",
-    });
+    import { getFormatterForStyle } from "../lib/localizedDates";
+    const formatter = getFormatterForStyle("Monday, Jan 1, 2020", "UTC");
     class GitHubCalendarElement extends HTMLElement {
         connectedCallback() {
             const tiles = this.querySelectorAll(
                 "div[data-c]",
-            ) as NodeListOf<HTMLElement>;
+            ) as NodeListOf<HTMLDivElement>;
             let startDateStr = this.dataset.startDate;
             if (startDateStr === undefined) {
                 throw new Error("github-calendar start-date is undefined");
@@ -113,16 +102,12 @@ const dateFormatterJustDate = Intl.DateTimeFormat("en-US", {
             const DAY_AS_MS = 86_400_000; // 1000 ms/s * 60 s/min * 60 min/hr * 24 hr/day
             for (const tile of tiles) {
                 const commits = tile.dataset.c?.toString() ?? "??";
-                tile.title = `${commits} commits on ${dateFormatterWeekday.format(currentDate)}`;
+                tile.title = `${commits} commits on ${formatter.format(currentDate)}`;
                 currentDate.setTime(currentDate.getTime() + DAY_AS_MS);
             }
-            // title={`${day.contributionCount} commits on ${dateFormatterWeekday.format(day.date)}`}
         }
     }
-    setTimeout(() => {
-        window.customElements.define("github-calendar", GitHubCalendarElement);
-        console.debug("github-calendar registered");
-    }, 2000);
+    window.customElements.define("github-calendar", GitHubCalendarElement);
 </script>
 
 {

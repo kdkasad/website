@@ -6,6 +6,7 @@ import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 import { getBlogPostParams, getBlogPostPath } from "../../../../../lib/blog";
 import BlogPostTOC from "../../../../../components/BlogPostTOC.astro";
+import LocalizedDate from "../../../../../components/LocalizedDate.astro";
 
 // Returns list of blog posts to generate static pages
 export const getStaticPaths = (async () => {
@@ -83,13 +84,8 @@ const nextPost = allPosts[thisPostIndex + 1];
         </div>
         <div class="flex justify-between">
             <div>{post.data.author}</div>
-            <div id="post-date" data-timestamp={post.data.date.getTime()}>
-                {
-                    post.data.date.toLocaleDateString(undefined, {
-                        dateStyle: "long",
-                        timeZone: "UTC",
-                    })
-                }
+            <div>
+                <LocalizedDate style="locale-long" date={post.data.date} utc />
             </div>
         </div>
     </div>
@@ -139,17 +135,3 @@ const nextPost = allPosts[thisPostIndex + 1];
         </div>
     </div>
 </AccentedTitleLayout>
-
-<script>
-    // Replace post date with browser's locale
-    const dateLabel = document.getElementById("post-date");
-    if (!dateLabel) {
-        throw new Error("#post-date not found");
-    }
-    const timestamp = parseInt(dateLabel.dataset.timestamp ?? "");
-    const date = new Date(timestamp);
-    dateLabel.textContent = date.toLocaleDateString(undefined, {
-        dateStyle: "long",
-        timeZone: "UTC",
-    });
-</script>
