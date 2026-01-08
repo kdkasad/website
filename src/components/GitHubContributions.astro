@@ -101,8 +101,8 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
             const currentDate = startDate;
             const DAY_AS_MS = 86_400_000; // 1000 ms/s * 60 s/min * 60 min/hr * 24 hr/day
             for (const tile of tiles) {
-                const commits = tile.dataset.c?.toString() ?? "??";
-                tile.title = `${commits} commits on ${formatter.format(currentDate)}`;
+                const commits = tile.dataset.c ?? "??";
+                tile.title = `${commits} commit${commits === "1" ? "" : "s"} on ${formatter.format(currentDate)}`;
                 currentDate.setTime(currentDate.getTime() + DAY_AS_MS);
             }
         }
