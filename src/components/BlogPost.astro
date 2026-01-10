@@ -1,0 +1,131 @@
+---
+import { SEO } from "astro-seo";
+import AccentedTitleLayout from "../layouts/AccentedTitleLayout.astro";
+import BlogPostTOC from "../components/BlogPostTOC.astro";
+import LocalizedDate from "../components/LocalizedDate.astro";
+
+import { getBlogPostPath } from "../lib/blog";
+import { type CollectionEntry, getCollection, render } from "astro:content";
+
+export interface Props {
+    post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+// Get all posts, sorted by date in increasing order
+const allPosts = (await getCollection("blog")).toSorted(
+    (a, b) => a.data.date.getTime() - b.data.date.getTime(),
+);
+const thisPostIndex = allPosts.findIndex((p) => p.id === post.id);
+const prevPost = allPosts[thisPostIndex - 1];
+const nextPost = allPosts[thisPostIndex + 1];
+---
+
+<AccentedTitleLayout>
+    <SEO
+        slot="head"
+        title={post.data.title}
+        titleTemplate="%s | Kian's blog"
+        description={post.data.description}
+        openGraph={{
+            basic: {
+                title: post.data.title,
+                type: "article",
+                image: new URL(
+                    "/assets/laptoppfp2-offwhite-cropped-small.png",
+                    Astro.url,
+                ).href,
+            },
+            image: {
+                url: new URL(
+                    "/assets/laptoppfp2-offwhite-cropped-small.png",
+                    Astro.url,
+                ).href,
+                height: 600,
+                width: 600,
+                type: "image/png",
+                alt: "Kian's profile picture of a cartoon frog typing on a laptop",
+            },
+            article: {
+                publishedTime: post.data.date.toISOString(),
+            },
+            optional: {
+                description: post.data.description,
+            },
+        }}
+        twitter={{
+            title: post.data.title,
+            description: post.data.description,
+            image: new URL(
+                "/assets/laptoppfp2-offwhite-cropped-small.png",
+                Astro.url,
+            ).href,
+            imageAlt:
+                "Kian's profile picture of a cartoon frog typing on a laptop",
+        }}
+    />
+
+    <div slot="title" class="*:not-first:mt-4 *:not-first:lg:mt-8">
+        <div>
+            <a class="hover:underline" href="/blog">
+                &LeftArrow;&nbsp;&nbsp;All posts
+            </a>
+        </div>
+        <div class="text-4xl font-black text-shadow-xs sm:text-6xl">
+            {post.data.title}
+        </div>
+        <div class="flex justify-between">
+            <div>{post.data.author}</div>
+            <div>
+                <LocalizedDate style="locale-long" date={post.data.date} utc />
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="prose sm:prose-lg prose-stone prose-headings:underline prose-headings:decoration-accent prose-headings:decoration-4 prose-headings:tracking-tight prose-h1:decoration-6 prose-h1:mt-12 prose-h1:mb-4 prose-a:decoration-accent prose-a:decoration-2 prose-a:hover:decoration-3 prose-code:before:content-none prose-code:after:content-none text-primary mx-auto mt-12 w-full max-w-[75ch] px-8 sm:leading-normal lg:mt-16 [&>section.footnotes]:mt-16 [&>section.footnotes]:border-t [&>section.footnotes]:pt-12"
+    >
+        {
+            post.data.toc !== "none" && headings.length > 0 && (
+                <BlogPostTOC open={post.data.toc === "expand"} {headings} />
+            )
+        }
+        <Content />
+    </div>
+
+    {/* Previous/next post links */}
+    <div class="bg-accent text-background mt-16 w-full p-8 shadow-lg">
+        <div
+            class="mx-auto grid max-w-screen-lg grid-cols-1 gap-8 sm:grid-cols-2 sm:flex-row lg:grid-cols-3"
+        >
+            {
+                [prevPost, nextPost].map((p) => (
+                    <div class:list={[p === nextPost && "lg:col-3"]}>
+                        {p && (
+                            <a
+                                class:list={[
+                                    "hover:underline",
+                                    p === nextPost && "text-right",
+                                ]}
+                                href={getBlogPostPath(p)}
+                            >
+                                <div class="text-xl font-bold decoration-2">
+                                    {p === prevPost ? (
+                                        <>
+                                            &LeftArrow;&nbsp;&nbsp;Previous post
+                                        </>
+                                    ) : (
+                                        <>Next post&nbsp;&nbsp;&RightArrow;</>
+                                    )}
+                                </div>
+                                <div>{p.data.title}</div>
+                            </a>
+                        )}
+                    </div>
+                ))
+            }
+        </div>
+    </div>
+</AccentedTitleLayout>
