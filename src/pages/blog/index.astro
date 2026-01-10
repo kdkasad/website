@@ -1,11 +1,11 @@
 ---
-import AccentedTitleLayout from "../../layouts/AccentedTitleLayout.astro";
+import AccentedTitleLayout from "@/layouts/AccentedTitleLayout.astro";
 import { SEO } from "astro-seo";
 
 import { getCollection } from "astro:content";
-import { getBlogPostPath } from "../../lib/blog";
+import { getBlogPostPath } from "@/lib/blog";
 import type { CollectionEntry } from "astro:content";
-import LocalizedDate from "../../components/LocalizedDate.astro";
+import LocalizedDate from "@/components/LocalizedDate.astro";
 
 const DESCRIPTION =
     "A place where I write about various programming-related things from time to time.";

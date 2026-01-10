@@ -3,8 +3,8 @@ import { SKIP_REMOTE } from "astro:env/server";
 import {
     getGitHubContributionWeeks,
     type ContributionInfo,
-} from "../lib/githubContributions";
-import LocalizedDate from "./LocalizedDate.astro";
+} from "@/lib/githubContributions";
+import LocalizedDate from "@/components/LocalizedDate.astro";
 
 function getTileColorClass(contributionCount: number) {
     return contributionCount >= 20
@@ -86,7 +86,7 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
     */
 }
 <script>
-    import { getFormatterForStyle } from "../lib/localizedDates";
+    import { getFormatterForStyle } from "@/lib/localizedDates";
     const formatter = getFormatterForStyle("Monday, Jan 1, 2020", "UTC");
     class GitHubCalendarElement extends HTMLElement {
         connectedCallback() {

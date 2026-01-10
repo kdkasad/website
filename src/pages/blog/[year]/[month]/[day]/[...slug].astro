@@ -1,9 +1,9 @@
 ---
-import BlogPost from "../../../../../components/BlogPost.astro";
+import BlogPost from "@/components/BlogPost.astro";
 
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
-import { getBlogPostParams } from "../../../../../lib/blog";
+import { getBlogPostParams } from "@/lib/blog";
 
 // Returns list of blog posts to generate static pages
 export const getStaticPaths = (async () => {

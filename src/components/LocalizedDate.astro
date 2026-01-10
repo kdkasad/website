@@ -1,5 +1,5 @@
 ---
-import { getFormatterForStyle, type Style } from "../lib/localizedDates";
+import { getFormatterForStyle, type Style } from "@/lib/localizedDates";
 
 export interface Props {
     style?: Style;
@@ -21,7 +21,7 @@ const formatter = getFormatterForStyle(style, utc ? "UTC" : undefined);
 >
 
 <script>
-    import { getFormatterForStyle, type Style } from "../lib/localizedDates";
+    import { getFormatterForStyle, type Style } from "@/lib/localizedDates";
 
     class LocalizedDateElement extends HTMLElement {
         connectedCallback() {

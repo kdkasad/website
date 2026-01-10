@@ -1,10 +1,10 @@
 ---
 import { SEO } from "astro-seo";
-import AccentedTitleLayout from "../layouts/AccentedTitleLayout.astro";
-import BlogPostTOC from "../components/BlogPostTOC.astro";
-import LocalizedDate from "../components/LocalizedDate.astro";
+import AccentedTitleLayout from "@/layouts/AccentedTitleLayout.astro";
+import BlogPostTOC from "@/components/BlogPostTOC.astro";
+import LocalizedDate from "@/components/LocalizedDate.astro";
 
-import { getBlogPostPath } from "../lib/blog";
+import { getBlogPostPath } from "@/lib/blog";
 import { type CollectionEntry, getCollection, render } from "astro:content";
 
 export interface Props {
