@@ -26,79 +26,115 @@ const boldNavItemPath = navItems
             <menu class="flex flex-row gap-4 max-sm:hidden">
                 {
                     navItems.map(({ path, name }) => (
-                        <li class={path == boldNavItemPath ? "font-bold" : ""}>
-                            <a href={path}>{name}</a>
+                        <li>
+                            <a
+                                href={path}
+                                class:list={[
+                                    "decoration-accent decoration-2 hover:underline",
+                                    path === boldNavItemPath &&
+                                        "font-bold underline",
+                                ]}
+                            >
+                                {name}
+                            </a>
                         </li>
                     ))
                 }
             </menu>
 
             {/* Hamburger menu */}
-            <details
-                id="hamburger"
-                class="peer group open:bg-background open:text-primary hidden open:fixed open:top-0 open:right-0 open:bottom-0 open:z-20 open:w-80 open:max-w-dvh open:p-4 open:text-base open:shadow-lg max-sm:block"
+            <button
+                type="button"
+                popovertarget="nav-dialog"
+                popovertargetaction="show"
+                aria-label="Open navigation menu"
+                class="cursor-pointer sm:hidden"
             >
-                <summary class="inline cursor-pointer">
-                    <Icon
-                        name="fa7-solid:bars"
-                        class="inline group-open:hidden"
-                        role="button"
-                        aria-label="Open navigation menu"
-                    />
-                    <Icon
-                        name="fa7-solid:close"
-                        class="hidden group-open:inline"
-                        role="button"
+                <Icon class="inline" name="fa7-solid:bars" />
+            </button>
+            <dialog
+                id="nav-dialog"
+                popover
+                class="bg-background fixed start-auto end-auto top-0 right-0 bottom-0 h-full w-70 p-4"
+            >
+                <div class="flex flex-row justify-between">
+                    <a href="/" class="font-bold"> kasad.com </a>
+                    <button
+                        type="button"
+                        popovertarget="nav-dialog"
+                        popovertargetaction="hide"
                         aria-label="Close navigation menu"
-                    />
-                </summary>
-
-                <menu class="mt-8 flex flex-col gap-4">
+                        class="cursor-pointer"
+                    >
+                        <Icon class="inline" name="fa7-solid:close" />
+                    </button>
+                </div>
+                <menu class="mt-8 flex flex-col gap-2 text-base">
                     {
                         navItems.map(({ path, name }) => (
                             <li
-                                class={
-                                    path == boldNavItemPath ? "font-bold" : ""
-                                }
+                                class:list={[
+                                    "list-inside",
+                                    path == boldNavItemPath
+                                        ? "marker:text-accent list-disc font-bold"
+                                        : "list-[circle]",
+                                ]}
                             >
-                                <a href={path}>{name}</a>
+                                <a
+                                    href={path}
+                                    class:list={[
+                                        "decoration-accent decoration-2 hover:underline",
+                                        path === boldNavItemPath && "underline",
+                                    ]}
+                                >
+                                    {name}
+                                </a>
                             </li>
                         ))
                     }
                 </menu>
-            </details>
-            {/* Hamburger backdrop */}
-            <div
-                id="backdrop"
-                class="bg-primary fixed inset-0 z-10 hidden opacity-50 peer-open:block"
-            >
-            </div>
+            </dialog>
         </nav>
     </div>
 </header>
 
-<script>
-    const backdrop = document.getElementById(
-        "backdrop",
-    ) as HTMLDivElement | null;
-    const hamburger = document.getElementById(
-        "hamburger",
-    ) as HTMLDetailsElement | null;
-
-    // Clicking on the backdrop closes the menu
-    backdrop?.addEventListener("click", () => {
-        if (hamburger) {
-            hamburger.open = false;
+<style is:global>
+    #nav-dialog {
+        & {
+            transform: translateX(100%);
+            transition:
+                transform 250ms ease,
+                display 250ms allow-discrete,
+                overlay 250ms allow-discrete;
         }
-    });
 
-    // Set overflow: hidden; on body when hamburger is opened to prevent
-    // scrolling behind the popup
-    hamburger?.addEventListener("toggle", () => {
-        if (hamburger.open) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "auto";
+        &:popover-open {
+            transform: translateX(0);
         }
-    });
-</script>
+
+        &::backdrop {
+            background-color: var(--color-primary);
+            opacity: 0;
+            transition:
+                opacity 250ms,
+                display 250ms allow-discrete,
+                overlay 250ms allow-discrete;
+        }
+
+        &:popover-open::backdrop {
+            opacity: 0.5;
+        }
+    }
+
+    @starting-style {
+        #nav-dialog {
+            &:popover-open {
+                transform: translateX(100%);
+            }
+
+            &:popover-open::backdrop {
+                opacity: 0;
+            }
+        }
+    }
+</style>
