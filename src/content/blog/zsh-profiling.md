@@ -354,5 +354,5 @@ $ ZSH_PROFILE_STARTUP=1 zsh -i -c exit
 ## That's all...
 
 If you found this article useful, consider
-[checking out other articles I've written](/blog),
+[checking out other articles I've written](/blog/),
 or [take a look at my public projects on GitHub](https://github.com/kdkasad).

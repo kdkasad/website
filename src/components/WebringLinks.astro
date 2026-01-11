@@ -33,7 +33,7 @@ const entries: WebringLink[] = [
     {
         entries.map((entry) => (
             <a
-                href={baseUrl + entry.path}
+                href={new URL(entry.path, baseUrl).href}
                 title={entry.title}
                 target={entry.newTab ? "_blank" : undefined}
                 class={`transition-opacity duration-200 hover:opacity-80`}

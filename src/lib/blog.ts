@@ -21,5 +21,5 @@ export function getBlogPostParams(
 
 export function getBlogPostPath(post: CollectionEntry<"blog">): string {
     const params = getBlogPostParams(post);
-    return `/blog/${params.year}/${params.month}/${params.day}/${params.slug}`;
+    return `/blog/${params.year}/${params.month}/${params.day}/${params.slug}/`;
 }

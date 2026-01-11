@@ -13,6 +13,7 @@ if (!baseUrl) throw new Error("BASE_URL is not set");
 // https://astro.build/config
 export default defineConfig({
     site: baseUrl,
+    trailingSlash: "always",
     env: {
         // Defines the schema for environment variables
         schema: {
