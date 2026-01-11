@@ -14,11 +14,11 @@ const headingStyle =
     "decoration-accent mb-4 text-3xl font-black underline decoration-4";
 
 const headings = [
+    ["About me", "#about-me"],
     ["Projects", "#projects"],
     ["Blog", "/blog/"],
     // ["Work experience", "#work-experience"],
     // ["Other stuff", "#"],
-    ["More coming soon...", null],
 ];
 ---
 
@@ -101,7 +101,12 @@ const headings = [
 
             {/* About me */}
             <section class="mt-24 flex-initial text-2xl xl:mt-0 xl:max-w-sm">
-                <h1 class={`${headingStyle} mb-4`}>About me</h1>
+                <h1
+                    id="about-me"
+                    class:list={[headingStyle, "mb-4 scroll-mt-16"]}
+                >
+                    About me
+                </h1>
                 <Affiliations />
             </section>
         </div>
