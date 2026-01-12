@@ -60,10 +60,13 @@ RewriteEngine On
 # Set the base path that rewrites will match relative to
 RewriteBase "/homes/kkasad/"
 # Redirect the path to always include a trailing slash
-RewriteRule "^flip$" "/homes/kkasad/flip/"
+RewriteRule "^forward$" "/homes/kkasad/forward/"
 # Reverse proxy to the given site
-RewriteRule "^flip/(.*)$" "http://data.cs.purdue.edu:20202/$1" [proxy]
+RewriteRule "^forward/(.*)$" "http://data.cs.purdue.edu:20202/$1" [proxy]
 ```
+
+This will send requests for `https://cs.purdue.edu/homes/kkasad/forward/XXX` to
+to `http://data.cs.purdue.edu:20202/XXX`, where `XXX` is any sub-path.
 
 <Callout style="note">
     Remember that the WWW server is running on `pythia.cs`, so you can't use
