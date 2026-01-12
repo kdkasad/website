@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 
-type Style = "note" | "warning";
+type Style = "note" | "warning" | "important";
 export interface Props {
     style: Style;
     title?: string;
@@ -24,6 +24,11 @@ const STYLES: Record<Style, StyleInfo> = {
         classes: "bg-amber-300/30 border-amber-400",
         label: "Warning",
         icon: "fa7-solid:warning",
+    },
+    important: {
+        classes: "bg-purple-300/30 border-purple-400",
+        label: "Important",
+        icon: "fa7-solid:info-circle",
     },
 };
 const info = STYLES[style];

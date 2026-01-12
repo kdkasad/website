@@ -1,0 +1,64 @@
+---
+import AccentedTitleLayout from "@/layouts/AccentedTitleLayout.astro";
+import type { CollectionEntry } from "astro:content";
+import CommonSEO from "@/components/CommonSEO.astro";
+
+import { getCollection } from "astro:content";
+
+const notes = await getCollection("notes");
+const categories: Record<string, CollectionEntry<"notes">[]> = {};
+notes.forEach((note) => {
+    const category = note.filePath!.split("/").at(-2)!;
+    if (!(category in categories)) {
+        categories[category] = [];
+    }
+    categories[category].push(note);
+});
+const categoryEntries = Object.entries(categories).toSorted((a, b) =>
+    a[0].localeCompare(b[0]),
+);
+categoryEntries.forEach(([_, notes]) => {
+    notes.sort((a, b) => a.data.title.localeCompare(b.data.title));
+});
+
+const DESCRIPTION =
+    "Writings that aren't quite blog posts, but that people might still find helpful.";
+---
+
+<AccentedTitleLayout>
+    <CommonSEO
+        title="Notes"
+        description="Writings that aren't quite blog posts, but that people might still find helpful."
+    />
+
+    <div slot="title">
+        <div class="text-6xl font-black text-shadow-xs">Notes</div>
+        <p class="mt-8">
+            {DESCRIPTION}
+        </p>
+    </div>
+
+    <div class="mx-auto max-w-screen-lg px-8 text-lg sm:px-16">
+        {
+            categoryEntries.map(([category, notes]) => (
+                <>
+                    <h1 class="mt-8 mb-2 text-2xl font-bold first:mt-16">
+                        {category}
+                    </h1>
+                    <ul>
+                        {notes.map((note) => (
+                            <li class="marker:text-accent list-inside list-disc">
+                                <a
+                                    href={`/notes/${note.id}/`}
+                                    class="decoration-accent decoration-2 hover:underline"
+                                >
+                                    {note.data.title}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </>
+            ))
+        }
+    </div>
+</AccentedTitleLayout>

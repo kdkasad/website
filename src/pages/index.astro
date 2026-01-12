@@ -15,10 +15,11 @@ import CommonSEO from "@/components/CommonSEO.astro";
 const headingStyle =
     "decoration-accent mb-4 text-3xl font-black underline decoration-4";
 
-const headings: [string, string | null][] = [
+const navLinks: [string, string | null][] = [
     ["About me", "#about-me"],
     ["Projects", "#projects"],
     ["Blog", "/blog/"],
+    ["Notes", "/notes/"],
     // ["Work experience", "#work-experience"],
     // ["Other stuff", "#"],
 ];
@@ -80,7 +81,7 @@ const headings: [string, string | null][] = [
         </section>
 
         {/* Heading links */}
-        <NavLinks {headings} {headingStyle} />
+        <NavLinks headings={navLinks} {headingStyle} />
     </div>
 
     <ProjectsSection {headingStyle} />

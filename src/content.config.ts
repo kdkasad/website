@@ -88,4 +88,12 @@ export const collections = {
             toc: z.enum(["collapse", "expand", "none"]).default("collapse"),
         }),
     }),
+
+    notes: defineCollection({
+        loader: glob({ pattern: "**/*.md{,x}", base: "src/content/notes" }),
+        schema: z.object({
+            title: z.string().nonempty(),
+            description: z.string().nonempty(),
+        }),
+    }),
 };
