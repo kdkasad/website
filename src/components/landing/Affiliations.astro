@@ -1,8 +1,17 @@
 ---
 import { Icon } from "astro-icon/components";
+
+export interface Props {
+    headingStyle: string;
+}
+
+const { headingStyle } = Astro.props;
 ---
 
-<div>
+<section class="mt-24 flex-initial text-2xl xl:mt-0 xl:max-w-sm">
+    <h1 id="about-me" class:list={[headingStyle, "mb-4 scroll-mt-16"]}>
+        About me
+    </h1>
     <div class="flex w-full flex-col items-stretch gap-6 leading-[1.15]">
         <div class="flex flex-row items-center gap-8">
             <div class="text-purdue flex-auto font-bold">
@@ -51,4 +60,4 @@ import { Icon } from "astro-icon/components";
             </div>
         </div>
     </div>
-</div>
+</section>
