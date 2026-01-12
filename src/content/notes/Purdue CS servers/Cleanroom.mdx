@@ -24,7 +24,7 @@ To easily manipulate namespaces, we can use `bwrap(1)`. I make a shell function
 for this so I don't have to remember the command:
 
 ```sh
-cleanroom () {
+cleanroom() {
         bwrap --ro-bind / / --dev /dev --proc /proc --tmpfs $(realpath $HOME) /bin/zsh
 }
 ```
