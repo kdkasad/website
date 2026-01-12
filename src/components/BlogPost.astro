@@ -6,6 +6,7 @@ import LocalizedDate from "@/components/LocalizedDate.astro";
 
 import { getBlogPostPath } from "@/lib/blog";
 import { type CollectionEntry, getCollection, render } from "astro:content";
+import CommonSEO from "./CommonSEO.astro";
 
 export interface Props {
     post: CollectionEntry<"blog">;
@@ -24,47 +25,13 @@ const nextPost = allPosts[thisPostIndex + 1];
 ---
 
 <AccentedTitleLayout>
-    <SEO
+    <CommonSEO
         slot="head"
+        titleTemplate="Kian's blog"
         title={post.data.title}
-        titleTemplate="%s | Kian's blog"
         description={post.data.description}
-        openGraph={{
-            basic: {
-                title: post.data.title,
-                type: "article",
-                image: new URL(
-                    "/assets/laptoppfp2-offwhite-cropped-small.png",
-                    Astro.url,
-                ).href,
-            },
-            image: {
-                url: new URL(
-                    "/assets/laptoppfp2-offwhite-cropped-small.png",
-                    Astro.url,
-                ).href,
-                height: 600,
-                width: 600,
-                type: "image/png",
-                alt: "Kian's profile picture of a cartoon frog typing on a laptop",
-            },
-            article: {
-                publishedTime: post.data.date.toISOString(),
-            },
-            optional: {
-                description: post.data.description,
-            },
-        }}
-        twitter={{
-            title: post.data.title,
-            description: post.data.description,
-            image: new URL(
-                "/assets/laptoppfp2-offwhite-cropped-small.png",
-                Astro.url,
-            ).href,
-            imageAlt:
-                "Kian's profile picture of a cartoon frog typing on a laptop",
-        }}
+        cardTitle={post.data.title}
+        article={{ pubDate: post.data.date }}
     />
 
     <div slot="title" class="*:not-first:mt-4 *:not-first:lg:mt-8">

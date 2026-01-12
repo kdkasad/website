@@ -1,6 +1,6 @@
 ---
 import AccentedTitleLayout from "@/layouts/AccentedTitleLayout.astro";
-import { SEO } from "astro-seo";
+import CommonSEO from "@/components/CommonSEO.astro";
 
 import { getCollection } from "astro:content";
 import { getBlogPostPath } from "@/lib/blog";
@@ -30,42 +30,10 @@ const sortedYears = Array.from(postsByYear.keys()).toSorted((a, b) => b - a);
 ---
 
 <AccentedTitleLayout>
-    <SEO
-        slot="head"
-        title="Blog | Kian Kasad"
+    <CommonSEO
+        title="Blog"
         description={DESCRIPTION}
-        openGraph={{
-            basic: {
-                title: "Kian's Blog",
-                type: "website",
-                image: new URL(
-                    "/assets/laptoppfp2-offwhite-cropped-small.png",
-                    Astro.url,
-                ).href,
-            },
-            image: {
-                url: new URL(
-                    "/assets/laptoppfp2-offwhite-cropped-small.png",
-                    Astro.url,
-                ).href,
-                height: 600,
-                width: 600,
-                type: "image/png",
-                alt: "Profile picture of a cartoon frog typing on a laptop",
-            },
-            optional: {
-                description: DESCRIPTION,
-            },
-        }}
-        twitter={{
-            title: "Kian Kasad",
-            description: DESCRIPTION,
-            image: new URL(
-                "/assets/laptoppfp2-offwhite-cropped-small.png",
-                Astro.url,
-            ).href,
-            imageAlt: "Profile picture of a cartoon frog typing on a laptop",
-        }}
+        cardTitle="Kian's blog"
         extend={{
             link: [
                 {
