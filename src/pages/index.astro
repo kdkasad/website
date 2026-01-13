@@ -9,8 +9,8 @@ import ProjectsSection from "@/components/landing/ProjectsSection.astro";
 import NavLinks from "@/components/landing/NavLinks.astro";
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
-import { SEO } from "astro-seo";
 import CommonSEO from "@/components/CommonSEO.astro";
+import BlogTeaser from "@/components/landing/BlogTeaser.astro";
 
 const headingStyle =
     "decoration-accent mb-4 text-3xl font-black underline decoration-4";
@@ -18,7 +18,7 @@ const headingStyle =
 const navLinks: [string, string | null][] = [
     ["About me", "#about-me"],
     ["Projects", "#projects"],
-    ["Blog", "/blog/"],
+    ["Blog", "#blog"],
     ["Notes", "/notes/"],
     // ["Work experience", "#work-experience"],
     // ["Other stuff", "#"],
@@ -85,6 +85,8 @@ const navLinks: [string, string | null][] = [
     </div>
 
     <ProjectsSection {headingStyle} />
+
+    <BlogTeaser {headingStyle} />
 
     <Footer class="mt-24" />
 </BaseLayout>

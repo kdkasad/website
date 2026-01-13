@@ -1,0 +1,57 @@
+---
+import { Icon } from "astro-icon/components";
+import LocalizedDate from "@/components/LocalizedDate.astro";
+
+import { getCollection } from "astro:content";
+import { DESCRIPTION as BLOG_DESCRIPTION } from "@/pages/blog/index.astro";
+import { getBlogPostPath } from "@/lib/blog";
+
+export interface Props {
+    headingStyle: string;
+}
+
+const { headingStyle } = Astro.props;
+
+const posts = await getCollection("blog");
+posts.sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+const latestPost = posts.at(-1);
+if (!latestPost) throw new Error("No blog posts found");
+---
+
+<section id="blog" class="mx-auto mt-8 max-w-screen-md p-8 text-lg">
+    <h1 class={headingStyle}>Blog</h1>
+    <p>{BLOG_DESCRIPTION}</p>
+    <div class="">
+        <aside class="group border-accent relative mt-6 rounded-lg border-2">
+            <a class="block p-4" href={getBlogPostPath(latestPost)}>
+                <label
+                    class="decoration-accent text-accent bg-background absolute top-0 left-4 -mt-0.5 -translate-y-1/2 cursor-pointer px-1 text-sm font-bold decoration-2 group-hover:underline"
+                >
+                    Latest post&nbsp;
+                    <Icon
+                        name="fa7-solid:external-link"
+                        class="inline size-3 align-baseline"
+                        title="Visit post"
+                    />
+                </label>
+                <p class="text-xl font-bold">
+                    {latestPost.data.title}
+                </p>
+                <p class="text-base text-stone-500">
+                    <LocalizedDate utc date={latestPost.data.date} />
+                </p>
+                <p class="mt-2">{latestPost.data.description}</p>
+            </a>
+        </aside>
+        <p class="mt-4 text-right">
+            <a
+                class="decoration-accent underline decoration-2 hover:decoration-4"
+                href="/blog/"
+            >
+                All {posts.length.toLocaleString()} post{
+                    posts.length === 1 ? "" : "s"
+                }&nbsp;&nbsp;&RightArrow;
+            </a>
+        </p>
+    </div>
+</section>
