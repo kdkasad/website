@@ -18,9 +18,7 @@ const formatter = getFormatterForStyle(style, utc ? "UTC" : undefined);
     data-style={style}
     data-date={date.getTime()}
     data-utc={utc}>{formatter.format(date)}</localized-date
->
-
-<script>
+><script>
     import { getFormatterForStyle, type Style } from "@/lib/localizedDates";
 
     class LocalizedDateElement extends HTMLElement {
