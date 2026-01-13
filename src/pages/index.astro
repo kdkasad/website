@@ -11,6 +11,8 @@ import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
 import CommonSEO from "@/components/CommonSEO.astro";
 import BlogTeaser from "@/components/landing/BlogTeaser.astro";
+import NotesTeaser from "@/components/landing/NotesTeaser.astro";
+import Divider from "@/components/landing/Divider.astro";
 
 const headingStyle =
     "decoration-accent mb-4 text-3xl font-black underline decoration-4";
@@ -19,7 +21,7 @@ const navLinks: [string, string | null][] = [
     ["About me", "#about-me"],
     ["Projects", "#projects"],
     ["Blog", "#blog"],
-    ["Notes", "/notes/"],
+    ["Notes", "#notes"],
     // ["Work experience", "#work-experience"],
     // ["Other stuff", "#"],
 ];
@@ -85,8 +87,11 @@ const navLinks: [string, string | null][] = [
     </div>
 
     <ProjectsSection {headingStyle} />
-
+    <Divider />
     <BlogTeaser {headingStyle} />
+    <Divider />
+    <NotesTeaser {headingStyle} />
+    <Divider />
 
     <Footer class="mt-24" />
 </BaseLayout>

@@ -18,7 +18,7 @@ const latestPost = posts.at(-1);
 if (!latestPost) throw new Error("No blog posts found");
 ---
 
-<section id="blog" class="mx-auto mt-8 max-w-screen-md p-8 text-lg">
+<section id="blog" class="mx-auto my-8 max-w-screen-md p-8 text-lg">
     <h1 class={headingStyle}>Blog</h1>
     <p>{BLOG_DESCRIPTION}</p>
     <div class="">
@@ -45,7 +45,7 @@ if (!latestPost) throw new Error("No blog posts found");
         </aside>
         <p class="mt-4 text-right">
             <a
-                class="decoration-accent underline decoration-2 hover:decoration-4"
+                class="text-accent font-medium decoration-2 hover:underline"
                 href="/blog/"
             >
                 All {posts.length.toLocaleString()} post{
