@@ -1,7 +1,16 @@
-<script
-    defer
-    src="https://stats.box.kasad.com/oj5ooPho.js"
-    data-website-id="be6f911e-2b31-40c5-8710-b112ad81d694"></script>
+---
+const isProd = import.meta.env.PROD;
+---
+
+{
+    isProd && (
+        <script
+            defer
+            src="https://stats.box.kasad.com/oj5ooPho.js"
+            data-website-id="be6f911e-2b31-40c5-8710-b112ad81d694"
+        />
+    )
+}
 
 {/* Track outbound link clicks */}
 <script>
