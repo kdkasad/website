@@ -15,8 +15,6 @@ keywords:
     - borgbackup
 ---
 
-import Callout from "@/components/Callout.astro";
-
 When running a Linux system, you often want to create full-system backups.
 However, running processes as root is generally bad practice.
 This article looks at how to run a full-system backup as a non-root user.
@@ -219,12 +217,11 @@ the copy of the executable.
 # setcap cap_dac_read_search=+ep ~backup/bin/kopia
 ```
 
-<Callout style="warning">
-    This will only work for programs which are native executables. This means
-    that [Borg](https://borgbackup.org), which is a Python script, won't work.
-    If you use Borg and want to know how to make this work, [send me an
-    email](mailto:kian@kasad.com) and I'll add details on how to do it.
-</Callout>
+> [!WARNING]
+> This will only work for programs which are native executables. This means
+> that [Borg](https://borgbackup.org), which is a Python script, won't work.
+> If you use Borg and want to know how to make this work, [send me an
+> email](mailto:kian@kasad.com) and I'll add details on how to do it.
 
 Now we can edit the `backup` user's `~/.profile` script to add the `~/bin`
 directory to the `PATH`, so that running `kopia` will use `~/bin/kopia` and not

@@ -3,13 +3,6 @@ title: Cleanroom (temporary empty home filesystem)
 description: How to create a temporary empty home filesystem to test things without user configuration
 ---
 
-import Callout from "@/components/Callout.astro";
-
-<Callout style="warning">
-    As of Spring 2026, `bwrap` no longer works on `data.cs`, but seems to work
-    on other servers (e.g. `mc21.cs`).
-</Callout>
-
 Sometimes it's useful to test stuff with an empty home filesystem. For example,
 if you want to test installing/setting up something as a new user without an
 existing configuration. Normally, you might just make a new user on the machine
@@ -29,9 +22,8 @@ cleanroom() {
 }
 ```
 
-<Callout style="note">
-    This mounts the `tmpfs` on the destination of your [home
-    symlink](../home-symlink/), so the `tmpfs` will be at something like
-    `/u/riker/u97/kkasad` and `/homes/kkasad` will still point to that
-    directory.
-</Callout>
+> [!NOTE]
+> This mounts the `tmpfs` on the destination of your [home
+> symlink](../home-symlink/), so the `tmpfs` will be at something like
+> `/u/riker/u97/kkasad` and `/homes/kkasad` will still point to that
+> directory.

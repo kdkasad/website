@@ -6,13 +6,10 @@ description:
     information covered in Purdue's CS 252 (Systems Programming) course.
 ---
 
-import Callout from "@/components/Callout.astro";
-
-<Callout style="note">
-    This was written for students in Purdue's CS 252 course. Hopefully the
-    information will be useful to others as well, but there may be some
-    references that don't make sense.
-</Callout>
+> [!NOTE]
+> This was written for students in Purdue's CS 252 course. Hopefully the
+> information will be useful to others as well, but there may be some
+> references that don't make sense.
 
 Hello fellow CS 252 student!
 
@@ -77,11 +74,10 @@ Well, if you run a command containing a pipeline, subshell, command
 substitution, or process substitution, that command consists of several
 processes.
 
-<Callout style="note">
-    What the CS 252 shell project calls a _subshell_ is really called _command
-    substitution_. A subshell is slightly different. Knowing the difference
-    isn't necessary here, but I mention this anyways to avoid confusion.
-</Callout>
+> [!NOTE]
+> What the CS 252 shell project calls a _subshell_ is really called _command
+> substitution_. A subshell is slightly different. Knowing the difference
+> isn't necessary here, but I mention this anyways to avoid confusion.
 
 Let's take the example of `cat /etc/passwd | grep root`. We have one process for
 the `cat` command, and one for `grep`. A pipe connects the two, so `grep` reads
@@ -218,10 +214,9 @@ for (int i = 0; i < _simpleCommands.size(); i++) {
 Note here that `first_pid` is `0` for the first iteration, which `setpgid(2)`
 will interpret as the PID of the current process.
 
-<Callout style="warning">
-    The above code _does not_ contain proper error handling. It is up to you to
-    do so if you choose to implement this in your shell.
-</Callout>
+> [!WARNING]
+> The above code _does not_ contain proper error handling. It is up to you to
+> do so if you choose to implement this in your shell.
 
 ### Setting the process group as the foreground
 
@@ -265,9 +260,8 @@ if (!_background) {
 }
 ```
 
-<Callout style="warning">
-    Again, the above does not include proper error handling.
-</Callout>
+> [!WARNING]
+> Again, the above does not include proper error handling.
 
 ### Bringing our shell back to the foreground
 
@@ -339,9 +333,8 @@ tcsetpgrp(0, getpgid(0));
 sigprocmask(SIG_SETMASK, &old, NULL);
 ```
 
-<Callout style="warning">
-    Like before, the above does not include error handling.
-</Callout>
+> [!WARNING]
+> Like before, the above does not include error handling.
 
 We can't actually be sure that our shell is the leader of the process group, so
 we call `getpgid(0)` to get the current PGID. It's a good idea to call

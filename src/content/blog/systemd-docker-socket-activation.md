@@ -7,8 +7,6 @@ description:
 date: 2024-06-17T17:21:36-07:00
 ---
 
-import Callout from "@/components/Callout.astro";
-
 If you have a [Docker](https://docker.com) container which is running all the time but is used infrequently,
 it may be a good idea to start the container only when a connection is received.
 This is particularly useful for resource-intensive servers.
@@ -163,11 +161,10 @@ it tells the proxy what address to connect to and forward traffic to/from.
 In our Docker Compose file, we forwarded port 81 on the host to 80 on the Docker container,
 so we want to connect to port 81 on the current machine, i.e. `localhost:81`.
 
-<Callout style="note">
-    You could also use the container's IP address and avoid publishing the port,
-    but that requires either static IP configuration or dynamically detecting
-    the container's address, which is too complicated for this tutorial.
-</Callout>
+> [!NOTE]
+> You could also use the container's IP address and avoid publishing the port,
+> but that requires either static IP configuration or dynamically detecting
+> the container's address, which is too complicated for this tutorial.
 
 The other argument to the proxy daemon is `--exit-idle-time=10min`.
 This tells it to exit after 10 minutes of being idle, i.e. not receiving any connections.
@@ -180,10 +177,8 @@ We only want it to be activated when `proxy-to-container.socket` is activated.
 
 ## 4. Starting and enabling our new services
 
-<Callout style="note">
-    Note: All of the commands in this section will likely need to be run as
-    root.
-</Callout>
+> [!NOTE]
+> All of the commands in this section will likely need to be run as root.
 
 First, run this command to prompt systemd to load the new units we've created:
 

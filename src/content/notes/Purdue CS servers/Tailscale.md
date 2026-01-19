@@ -3,8 +3,6 @@ title: Using Tailscale on the CS servers
 description: How to add the Purdue CS servers to a Tailscale VPN
 ---
 
-import Callout from "@/components/Callout.astro";
-
 It's possible to add the CS servers to your Tailscale network (Tailnet).
 However, make sure you still follow the [acceptable use policies][aup] if you
 choose to do so. Simply using Tailscale to connect to the servers from
@@ -29,10 +27,9 @@ archive using `tar`. Copy the `tailscaled` and `tailscale` binaries into
 `~/.local/bin`. Also add this directory to your `PATH` so you can run the
 `tailscale` utility.
 
-<Callout style="note">
-    You can put them somewhere else, but you'll need to adjust the service file
-    below to have the correct path to the binaries.
-</Callout>
+> [!NOTE]
+> You can put them somewhere else, but you'll need to adjust the service file
+> below to have the correct path to the binaries.
 
 ### Create the systemd service
 
@@ -72,20 +69,18 @@ CacheDirectory=tailscaled/%H
 WantedBy=default.target
 ```
 
-<Callout style="note">
-    This configuration was developed by referencing both the Systemd manual
-    pages and the Tailscale documentation. If you have questions about this
-    service configuration, please try to reference those to answer your
-    question. If you need more explanation, feel free to reach out and request
-    elaboration and I'll do my best to explain how it works.
-</Callout>
+> [!NOTE]
+> This configuration was developed by referencing both the Systemd manual
+> pages and the Tailscale documentation. If you have questions about this
+> service configuration, please try to reference those to answer your
+> question. If you need more explanation, feel free to reach out and request
+> elaboration and I'll do my best to explain how it works.
 
-<Callout style="important">
-    The `--user` option to `systemctl` specifies that we want to interact with
-    the `systemd` daemon running as our user account. If you leave that option
-    out, `systemctl` will try to control the system daemon, which runs as
-    `root`.
-</Callout>
+> [!IMPORTANT]
+> The `--user` option to `systemctl` specifies that we want to interact with
+> the `systemd` daemon running as our user account. If you leave that option
+> out, `systemctl` will try to control the system daemon, which runs as
+> `root`.
 
 [Systemd]: https://systemd.io
 

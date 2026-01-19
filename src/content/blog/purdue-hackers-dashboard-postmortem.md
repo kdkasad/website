@@ -7,8 +7,6 @@ date: 2025-11-08
 draft: false
 ---
 
-import Callout from "@/components/Callout.astro";
-
 Recently, at [Purdue Hackers][puhack]' weekly Hack Nights,
 we've been seeing an issue where every service on our
 server goes down simultaneously.
@@ -141,15 +139,13 @@ This would prevent whatever is broken from affecting other users, but it
 would still result in that client facing issues, as it wouldn't be able to
 send the requests it needs to.
 
-<Callout style="note" title="Side note (except it's not on the side)">
-    We (Lillith) did end up implementing a per-client connection limit, as it's a
-    good idea in general. Even if we fix this issue, we don't want a malicious user
-    to be able to hog all the connections and prevent legitimate users from
-    accessing Vulcan's services.
-
-    Now back to the digging...
-
-</Callout>
+> [!NOTE] Side note (except it's not on the side)
+> We (Lillith) did end up implementing a per-client connection limit, as it's a
+> good idea in general. Even if we fix this issue, we don't want a malicious user
+> to be able to hog all the connections and prevent legitimate users from
+> accessing Vulcan's services.
+>
+> Now back to the digging...
 
 Instead of just adjusting the connection limits,
 we need to figure out what is causing so many

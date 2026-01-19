@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import icon from "astro-icon";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { rehypeHeadingIds } from "@astrojs/markdown-remark";
-
+import { rehypeGitHubStyleCallouts } from "@/lib/custom-markdown";
 import mdx from "@astrojs/mdx";
 
 const baseUrl = process.env.BASE_URL;
@@ -42,6 +42,7 @@ export default defineConfig({
                 rehypeAutolinkHeadings,
                 { behavior: "wrap", properties: { className: "not-prose" } },
             ],
+            rehypeGitHubStyleCallouts,
         ],
     },
 });

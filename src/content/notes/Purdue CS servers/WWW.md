@@ -3,8 +3,6 @@ title: Web hosting on cs.purdue.edu
 description: Notes on how to host websites on the Purdue CS servers
 ---
 
-import Callout from "@/components/Callout.astro";
-
 First see this [help page](../help-pages/): [Creating personal homepage][hp].
 
 [hp]: https://www.cs.purdue.edu/resources/facilities/help/Creating-personal-homepage.html
@@ -68,8 +66,7 @@ RewriteRule "^forward/(.*)$" "http://data.cs.purdue.edu:20202/$1" [proxy]
 This will send requests for `https://cs.purdue.edu/homes/kkasad/forward/XXX` to
 to `http://data.cs.purdue.edu:20202/XXX`, where `XXX` is any sub-path.
 
-<Callout style="note">
-    Remember that the WWW server is running on `pythia.cs`, so you can't use
-    loopback addresses like `localhost` or `127.0.0.1`. Make sure your upstream
-    service is listening on a non-local IP (like `0.0.0.0`).
-</Callout>
+> [!NOTE]
+> Remember that the WWW server is running on `pythia.cs`, so you can't use
+> loopback addresses like `localhost` or `127.0.0.1`. Make sure your upstream
+> service is listening on a non-local IP (like `0.0.0.0`).

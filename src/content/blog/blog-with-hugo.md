@@ -5,12 +5,9 @@ description: An overview of how to use the Hugo static site generator (SSG) to
     write a blog.
 ---
 
-import Callout from "@/components/Callout.astro";
-
-<Callout style="note">
-    Since this post was written, I have transitioned my site away from Hugo.
-    While the information here may still apply, it is likely outdated.
-</Callout>
+> [!NOTE]
+> Since this post was written, I have transitioned my site away from Hugo.
+> While the information here may still apply, it is likely outdated.
 
 Web development can be tricky, especially if you want your site to look nice.
 That's where [Hugo](https://gohugo.io) comes in.
@@ -90,10 +87,9 @@ This site uses the [Paper](https://github.com/nanxiaobei/hugo-paper) theme by Âç
 
 Once you find the theme you want, place it into the `themes` folder.
 
-<Callout style="note">
-    If you are using Git to version your Hugo site, you can include your theme
-    as a [submodule](/blog/2020/08/22/git-submodules).
-</Callout>
+> [!NOTE]
+> If you are using Git to version your Hugo site, you can include your theme
+> as a [submodule](/blog/2020/08/22/git-submodules).
 
 To use the theme in your site, set the `theme` key in your configuration file.
 For example, if your theme is located in `themes/my-sweet-theme`, your config file would contain this line:
