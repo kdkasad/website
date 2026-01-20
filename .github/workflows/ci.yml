@@ -45,6 +45,9 @@ jobs:
         env:
           GH_API_TOKEN: ${{ secrets.GH_API_TOKEN }}
 
+      - name: Compile NGINX redirects
+        run: bun run redirect-compiler ./dist > dist/.nginx.conf
+
       - name: Upload built site as artifact
         id: upload-build
         uses: actions/upload-artifact@v6

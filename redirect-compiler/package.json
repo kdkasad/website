@@ -1,0 +1,19 @@
+{
+    "name": "redirect-compiler",
+    "description": "Compiles HTML <meta> redirects into an NGINX config snippet",
+    "module": "src/index.ts",
+    "type": "module",
+    "private": true,
+    "devDependencies": {
+        "@types/bun": "latest",
+        "@types/hast": "^3.0.4"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    },
+    "dependencies": {
+        "rehype-parse": "^9.0.1",
+        "unified": "^11.0.5",
+        "unist-util-visit": "^5.0.0"
+    }
+}
