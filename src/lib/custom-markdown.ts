@@ -98,7 +98,7 @@ export function rehypeGitHubStyleCallouts() {
 
                 // Find callout marker
                 const match = firstTextChild.value.match(
-                    /\[!(?<style>\w+)\](?:\s+(?<title>[^\n]*))?\n+/,
+                    /\[!(?<style>\w+)\](?:[ \t]+(?<title>[^\n]*))?\n+/,
                 );
                 if (!match) return; // Blockquote is not a callout
                 if (!(match.groups!.style in calloutStyles)) {
