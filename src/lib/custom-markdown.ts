@@ -35,7 +35,7 @@ const icons = {
             }),
         ],
     ),
-} as const;
+} as const satisfies Record<string, RootContent>;
 
 const calloutStyles = {
     NOTE: {
@@ -53,7 +53,10 @@ const calloutStyles = {
         classes: "bg-purple-300/30 border-purple-400",
         icon: icons.infoCircle,
     },
-} as const;
+} as const satisfies Record<
+    string,
+    { label: string; classes: string; icon: RootContent }
+>;
 type CalloutStyle = keyof typeof calloutStyles;
 
 function createCallout(
