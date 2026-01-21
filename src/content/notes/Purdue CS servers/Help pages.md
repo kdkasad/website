@@ -10,3 +10,7 @@ about several things, including (mainly) the CS servers/machines/networks.
 
 It's relatively unknown since it requires authentication, meaning it can't be
 indexed by the likes of Google, so it doesn't show up in web search results.
+
+Dan Trinkle's page also has a wealth of information:
+
+<https://cs.purdue.edu/homes/trinkle/>
