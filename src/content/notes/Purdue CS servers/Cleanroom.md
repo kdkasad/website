@@ -18,7 +18,7 @@ for this so I don't have to remember the command:
 
 ```sh
 cleanroom() {
-        bwrap --ro-bind / / --dev /dev --proc /proc --tmpfs $(realpath $HOME) /bin/zsh
+        bwrap --bind / / --dev /dev --proc /proc --tmpfs $(realpath $HOME) /bin/zsh
 }
 ```
 
