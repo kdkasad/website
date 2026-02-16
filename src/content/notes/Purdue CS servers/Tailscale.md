@@ -31,6 +31,13 @@ archive using `tar`. Copy the `tailscaled` and `tailscale` binaries into
 > You can put them somewhere else, but you'll need to adjust the service file
 > below to have the correct path to the binaries.
 
+[Eric Park] has also written [a wonderful script] to automatically find the
+latest version of the Tailscale binaries from GitHub and install/update them.
+You can use that instead of following the above steps.
+
+[Eric Park]: https://ericswpark.com
+[a wonderful script]: https://gist.github.com/ericswpark/93a3cdaff36b63ecf65feb60827449bc
+
 ### Create the systemd service
 
 To keep the daemon running, we'll use [Systemd], which manages running services
