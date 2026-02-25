@@ -1,11 +1,7 @@
 ---
-import BlogPostOrNote from "@/components/BlogPostOrNote.astro";
-import CommonSEO from "@/components/CommonSEO.astro";
-import AccentedTitleLayout from "@/layouts/AccentedTitleLayout.astro";
-import { getNotesCollection } from "@/lib/content";
-
 import type { GetStaticPaths } from "astro";
-import { getCollection } from "astro:content";
+import BlogPostOrNote from "@/components/BlogPostOrNote.astro";
+import { getNotesCollection } from "@/lib/content";
 
 export const getStaticPaths = (async () => {
     const notes = await getNotesCollection();
@@ -16,8 +12,6 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { note } = Astro.props;
-const { title, description } = note.data;
-if (!title) throw new Error(`Note title not found for ${note.id}`);
 ---
 
 <BlogPostOrNote post={note} />

@@ -7,8 +7,25 @@ export interface Props {
     description: string;
     cardTitle?: string;
     article?: { pubDate?: Date };
+    image?: {
+        url: URL;
+        width: number;
+        height: number;
+        type: string;
+        alt: string;
+        large: boolean;
+    };
     extend?: SEOProps["extend"];
 }
+
+const defaultImage: Props["image"] = {
+    url: new URL("/assets/laptoppfp2-offwhite-cropped-small.png", Astro.url),
+    type: "image/png",
+    height: 600,
+    width: 600,
+    alt: "Profile picture of a cartoon frog typing on a laptop",
+    large: false,
+};
 
 let {
     title,
@@ -16,6 +33,7 @@ let {
     description,
     cardTitle,
     article,
+    image = defaultImage,
 } = Astro.props;
 title = title + " | " + titleTemplate;
 ---
@@ -27,21 +45,9 @@ title = title + " | " + titleTemplate;
         basic: {
             title: cardTitle ?? title,
             type: article !== undefined ? "article" : "website",
-            image: new URL(
-                "/assets/laptoppfp2-offwhite-cropped-small.png",
-                Astro.url,
-            ).href,
+            image: image.url.href,
         },
-        image: {
-            url: new URL(
-                "/assets/laptoppfp2-offwhite-cropped-small.png",
-                Astro.url,
-            ).href,
-            height: 600,
-            width: 600,
-            type: "image/png",
-            alt: "Profile picture of a cartoon frog typing on a laptop",
-        },
+        image: image,
         optional: { description },
         article: {
             publishedTime: article?.pubDate?.toISOString(),
@@ -49,10 +55,8 @@ title = title + " | " + titleTemplate;
     }}
     twitter={{
         title: cardTitle ?? title,
-        image: new URL(
-            "/assets/laptoppfp2-offwhite-cropped-small.png",
-            Astro.url,
-        ).href,
-        imageAlt: "Profile picture of a cartoon frog typing on a laptop",
+        image: image.url,
+        imageAlt: image.alt,
+        card: image.large ? "summary_large_image" : "summary",
     }}
 />

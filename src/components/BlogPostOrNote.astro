@@ -54,6 +54,14 @@ function getPostPath(post: CollectionEntry<"blog" | "notes">): string {
         article={{
             pubDate: isBlog ? post.data.date : undefined,
         }}
+        image={{
+            url: new URL("./og.png", Astro.url),
+            type: "image/png",
+            width: 1200,
+            height: 630,
+            alt: "Simplified preview screenshot of the post",
+            large: true,
+        }}
     />
 
     <div slot="title" class="*:not-first:mt-4 *:not-first:lg:mt-8">
