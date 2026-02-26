@@ -1,5 +1,6 @@
 ---
 import LocalizedDate from "@/components/LocalizedDate.astro";
+import { getNotesCollection } from "@/lib/content";
 import { getCollection } from "astro:content";
 
 export interface Props {
@@ -8,7 +9,7 @@ export interface Props {
 
 const { headingStyle } = Astro.props;
 
-const notes = await getCollection("notes");
+const notes = await getNotesCollection();
 ---
 
 <section id="notes" class="mx-auto my-8 max-w-screen-md p-8 text-lg *:mb-4">

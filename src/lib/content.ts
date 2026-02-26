@@ -1,4 +1,4 @@
-import type { CollectionEntry } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 
 export interface BlogPostParams {
     year: string;
@@ -22,4 +22,11 @@ export function getBlogPostParams(
 export function getBlogPostPath(post: CollectionEntry<"blog">): string {
     const params = getBlogPostParams(post);
     return `/blog/${params.year}/${params.month}/${params.day}/${params.slug}/`;
+}
+
+export async function getNotesCollection(): Promise<
+    CollectionEntry<"notes">[]
+> {
+    const allNotes = await getCollection("notes");
+    return allNotes.filter((note) => !note.data.hidden);
 }

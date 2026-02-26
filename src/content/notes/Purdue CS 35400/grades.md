@@ -1,6 +1,7 @@
 ---
 title: Automatically monitor for grade updates
 description: A shell script and Systemd unit to email you when your CS 354 grades are updated.
+hidden: true
 ---
 
 For CS 354, grades are stored in `~cs354/grades/$USER` as text files that get

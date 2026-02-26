@@ -2,12 +2,13 @@
 import BlogPostOrNote from "@/components/BlogPostOrNote.astro";
 import CommonSEO from "@/components/CommonSEO.astro";
 import AccentedTitleLayout from "@/layouts/AccentedTitleLayout.astro";
+import { getNotesCollection } from "@/lib/content";
 
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 
 export const getStaticPaths = (async () => {
-    const notes = await getCollection("notes");
+    const notes = await getNotesCollection();
     return notes.map((note) => ({
         params: { slug: note.id },
         props: { note },

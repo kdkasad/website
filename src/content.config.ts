@@ -94,6 +94,7 @@ export const collections = {
         schema: z.object({
             title: z.string().nonempty(),
             description: z.string().nonempty(),
+            hidden: z.boolean().default(false),
         }),
     }),
 };

@@ -4,8 +4,9 @@ import type { CollectionEntry } from "astro:content";
 import CommonSEO from "@/components/CommonSEO.astro";
 
 import { getCollection } from "astro:content";
+import { getNotesCollection } from "@/lib/content";
 
-const notes = await getCollection("notes");
+const notes = await getNotesCollection();
 const categories: Record<string, CollectionEntry<"notes">[]> = {};
 notes.forEach((note) => {
     const category = note.filePath!.split("/").at(-2)!;

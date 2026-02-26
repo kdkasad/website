@@ -2,7 +2,7 @@ import rss, { type RSSFeedItem } from "@astrojs/rss";
 import { DESCRIPTION } from "./index.astro";
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-import { getBlogPostPath } from "@/lib/blog";
+import { getBlogPostPath } from "@/lib/content";
 
 export const GET: APIRoute = async ({ site }) => {
     if (!site) throw new Error("'site' must be defined in astro.config.mjs");
