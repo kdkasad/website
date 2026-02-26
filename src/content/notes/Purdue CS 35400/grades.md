@@ -61,7 +61,7 @@ Run the following command to create a new service file.
 You can replace the name with whatever you like.
 
 ```sh
-$ systemctl --user edit --full monitor-cs354-grades.service
+$ systemctl --user edit --full --force monitor-cs354-grades.service
 ```
 
 This will open the new file in a text editor. Give it the following contents.
