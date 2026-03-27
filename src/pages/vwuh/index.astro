@@ -1,0 +1,45 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout extraBodyClasses="h-dvh w-dvw flex flex-col p-8 gap-4">
+    <form class="size-full">
+        <label
+            id="drop-zone"
+            class="bg-accent/30 active:bg-accent/40 border-accent box-border flex size-full cursor-pointer items-center justify-center rounded-2xl border-4 border-dashed text-2xl transition-colors duration-75"
+        >
+            Drop images here or click to select.
+            <input type="file" name="file" accept="image/*" class="hidden" />
+        </label>
+    </form>
+
+    <div id="result" class="hidden size-full flex-col gap-4">
+        <img
+            id="output"
+            class="min-h-0 w-full flex-1 rounded-xl object-contain"
+            alt="vwuh'd image"
+        />
+        <div class="flex shrink-0 justify-center gap-3">
+            <a
+                id="download"
+                class="bg-accent/30 hover:bg-accent/50 cursor-pointer rounded-xl px-6 py-2 font-bold transition-colors duration-75"
+            >
+                Download
+            </a>
+            <button
+                id="copy"
+                class="bg-accent/30 hover:bg-accent/50 cursor-pointer rounded-xl px-6 py-2 font-bold transition-colors duration-75"
+            >
+                Copy
+            </button>
+            <button
+                id="try-another"
+                class="bg-accent/30 hover:bg-accent/50 cursor-pointer rounded-xl px-6 py-2 font-bold transition-colors duration-75"
+            >
+                Try another
+            </button>
+        </div>
+    </div>
+
+    <script src="./_script.ts"></script>
+</BaseLayout>
