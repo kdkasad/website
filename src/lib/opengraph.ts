@@ -21,24 +21,36 @@ const raleway700 = await readFile(
 
 function h(
     type: string,
-    style: Record<string, string>,
+    style: Record<string, string | number>,
     ...children: unknown[]
 ) {
-    return { type, props: { style, children } };
+    return {
+        type,
+        props: {
+            style,
+            children:
+                children.length === 0
+                    ? undefined
+                    : children.length === 1
+                      ? children[0]
+                      : children,
+        },
+    };
 }
 
 export const GET: APIRoute<{ post: CollectionEntry<"blog" | "notes"> }> = ({
     props: { post },
 }) => {
-    const formattedDate =
-        "date" in post.data
-            ? post.data.date.toLocaleDateString("en-US", {
-                  timeZone: "UTC",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-              })
-            : "";
+    const isBlog = post.collection === "blog";
+
+    const formattedDate = isBlog
+        ? post.data.date.toLocaleDateString("en-US", {
+              timeZone: "UTC",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+          })
+        : "";
 
     const template = h(
         "div",
@@ -61,21 +73,23 @@ export const GET: APIRoute<{ post: CollectionEntry<"blog" | "notes"> }> = ({
                 color: "#fff",
                 display: "flex",
                 flexDirection: "column",
+                gap: "18px",
             },
             h("div", { display: "flex", fontSize: "20px" }, "kasad.com"),
-            h("div", { flex: "1", display: "flex" }),
+            h("div", { flex: "1" }),
             h(
                 "div",
                 {
-                    display: "flex",
+                    display: "block",
                     fontSize: "84px",
                     fontWeight: "900",
                     lineHeight: "1.1",
                     textShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
+                    lineClamp: "3",
                 },
                 post.data.title,
             ),
-            h("div", { flex: "1", display: "flex" }),
+            h("div", { flex: "1" }),
             h("div", { display: "flex", fontSize: "22px" }, formattedDate),
         ),
         h(
@@ -99,7 +113,7 @@ export const GET: APIRoute<{ post: CollectionEntry<"blog" | "notes"> }> = ({
                     marginRight: "20px",
                     textShadow: "0 2px 3px rgba(0, 0, 0, 0.25)",
                 },
-                "author" in post.data ? post.data.author : "Kian Kasad",
+                isBlog ? post.data.author : "Kian Kasad",
             ),
             h(
                 "div",
