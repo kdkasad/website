@@ -1,39 +1,23 @@
 import type { APIRoute } from "astro";
 import { readFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { satoriAstroOG } from "satori-astro";
 import { type CollectionEntry } from "astro:content";
+import avatarDataUrl from "../../public/assets/laptoppfp2-offwhite-circle-small.png?inline";
+
+const require = createRequire(import.meta.url);
 
 const raleway900 = await readFile(
-    fileURLToPath(
-        import.meta
-            .resolve("@fontsource/raleway/files/raleway-latin-900-normal.woff"),
-    ),
+    require.resolve("@fontsource/raleway/files/raleway-latin-900-normal.woff"),
 );
 
 const raleway500 = await readFile(
-    fileURLToPath(
-        import.meta
-            .resolve("@fontsource/raleway/files/raleway-latin-500-normal.woff"),
-    ),
+    require.resolve("@fontsource/raleway/files/raleway-latin-500-normal.woff"),
 );
 
 const raleway700 = await readFile(
-    fileURLToPath(
-        import.meta
-            .resolve("@fontsource/raleway/files/raleway-latin-700-normal.woff"),
-    ),
+    require.resolve("@fontsource/raleway/files/raleway-latin-700-normal.woff"),
 );
-
-const avatarBytes = await readFile(
-    fileURLToPath(
-        new URL(
-            "../../../public/assets/laptoppfp2-offwhite-circle-small.png",
-            import.meta.url,
-        ),
-    ),
-);
-const avatarDataUrl = `data:image/png;base64,${avatarBytes.toString("base64")}`;
 
 function h(
     type: string,
