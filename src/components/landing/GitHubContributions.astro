@@ -76,6 +76,10 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
             }
         </div>
     </div>
+    <div
+        class="github-calendar-tooltip text-background pointer-events-none invisible fixed rounded-md border border-stone-700 bg-stone-600 px-2 py-1 font-mono text-xs opacity-0 shadow-md transition-[top,left,opacity,visibility] duration-200 ease-out"
+    >
+    </div>
 </github-calendar>
 
 {
@@ -89,22 +93,96 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
     import { getFormatterForStyle } from "@/lib/localizedDates";
     const formatter = getFormatterForStyle("Monday, Jan 1, 2020", "UTC");
     class GitHubCalendarElement extends HTMLElement {
+        #tooltip: HTMLDivElement | null = null;
+        #container: HTMLDivElement | null = null;
+        #tooltipVisibleTile: HTMLDivElement | null = null;
+
         connectedCallback() {
             const tiles = this.querySelectorAll(
                 "div[data-c]",
             ) as NodeListOf<HTMLDivElement>;
+            this.#container = this.querySelector(".gh-column-parent")!;
+            this.#tooltip = this.querySelector(
+                ".github-calendar-tooltip",
+            )! as HTMLDivElement;
             let startDateStr = this.dataset.startDate;
             if (startDateStr === undefined) {
                 throw new Error("github-calendar start-date is undefined");
             }
+            const DAY_AS_MS = 86_400_000; // 1000 ms/s * 60 s/min * 60 min/hr * 24 hr/day
             const startDate = new Date(parseInt(startDateStr));
             const currentDate = startDate;
-            const DAY_AS_MS = 86_400_000; // 1000 ms/s * 60 s/min * 60 min/hr * 24 hr/day
             for (const tile of tiles) {
                 const commits = tile.dataset.c ?? "??";
-                tile.title = `${commits} commit${commits === "1" ? "" : "s"} on ${formatter.format(currentDate)}`;
+                const tooltipContent = `${commits} commit${commits === "1" ? "" : "s"} on ${formatter.format(currentDate)}`;
+                tile.addEventListener("pointerenter", (e) => {
+                    if (e.pointerType !== "touch") {
+                        this.#showTooltip(tile, tooltipContent);
+                    }
+                });
+                tile.addEventListener("click", () => {
+                    if (this.#tooltipVisibleTile === tile) {
+                        this.#hideTooltip();
+                    } else {
+                        this.#showTooltip(tile, tooltipContent);
+                        window.addEventListener(
+                            "scroll",
+                            () => this.#hideTooltip(),
+                            {
+                                passive: true,
+                                once: true,
+                            },
+                        );
+                    }
+                });
+
                 currentDate.setTime(currentDate.getTime() + DAY_AS_MS);
             }
+
+            this.#container.addEventListener("pointerleave", (e) => {
+                if (e.pointerType !== "touch") {
+                    this.#hideTooltip();
+                }
+            });
+        }
+
+        #showTooltip(tile: HTMLDivElement, content: string) {
+            this.#tooltipVisibleTile = tile;
+            this.#tooltip!.textContent = content; // Set content
+            // Get element widths
+            const tileBox = tile.getBoundingClientRect();
+            const htmlWidth = document.documentElement.clientWidth;
+
+            this.#tooltip!.classList.remove("invisible", "opacity-0"); // Show
+            const tooltipBox = this.#tooltip!.getBoundingClientRect();
+
+            // Position tooltip
+            const padding = 12;
+            const tileCenterX = tileBox.left + tileBox.width / 2;
+            let left = tileCenterX - tooltipBox.width / 2;
+            // If tile is on screen, keep tooltip on screen.
+            // If tile goes off screen, allow tooltop to clip off screen.
+            if (left < padding) {
+                if (tileBox.left >= 0) left = padding;
+                else left = tileBox.left;
+            } else if (left + tooltipBox.width + padding > htmlWidth) {
+                if (tileBox.right <= htmlWidth)
+                    left = htmlWidth - tooltipBox.width - padding;
+                else left = tileBox.right - tooltipBox.width;
+            }
+            this.#tooltip!.style.left = `${left}px`;
+            this.#tooltip!.style.top = `${tileBox.top - tooltipBox.height - padding}px`;
+            // Position arrow
+            this.#tooltip!.dataset.arrow = "bottom";
+            this.#tooltip!.style.setProperty(
+                "--arrow-x",
+                `${tileCenterX - left}px`,
+            );
+        }
+
+        #hideTooltip() {
+            this.#tooltipVisibleTile = null;
+            this.#tooltip!.classList.add("opacity-0", "invisible"); // Hide
         }
     }
     window.customElements.define("github-calendar", GitHubCalendarElement);
@@ -151,5 +229,27 @@ thus resulting in ~270 kB of savings.
 
     .gh-column-parent .c0 {
         @apply border-stone-300 bg-stone-300/80;
+    }
+
+    .github-calendar-tooltip {
+        &::after {
+            content: "";
+            position: absolute;
+            left: var(--arrow-x);
+            width: 0;
+            height: 0;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+        }
+
+        &[data-arrow="top"]::after {
+            border-bottom-color: var(--color-stone-600);
+            bottom: 100%;
+        }
+
+        &[data-arrow="bottom"]::after {
+            border-top-color: var(--color-stone-600);
+            top: 100%;
+        }
     }
 </style>
