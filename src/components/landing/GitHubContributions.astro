@@ -37,7 +37,7 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
         {contributionInfo.totalContributions.toLocaleString()} commits total
     </div>
     <div
-        class="flex w-full flex-row-reverse overflow-x-auto py-1 [scrollbar-color:var(--color-stone-300)_transparent] hover:[scrollbar-color:var(--color-stone-400)_transparent]"
+        class="gh-scroll-container flex w-full flex-row-reverse overflow-x-auto py-1 [scrollbar-color:var(--color-stone-300)_transparent] hover:[scrollbar-color:var(--color-stone-400)_transparent]"
     >
         <div class="flex w-fit flex-row gap-4 px-6">
             {
@@ -95,13 +95,14 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
     class GitHubCalendarElement extends HTMLElement {
         #tooltip: HTMLDivElement | null = null;
         #container: HTMLDivElement | null = null;
-        #tooltipVisibleTile: HTMLDivElement | null = null;
+        #scrollContainer: HTMLDivElement | null = null;
 
         connectedCallback() {
             const tiles = this.querySelectorAll(
                 "div[data-c]",
             ) as NodeListOf<HTMLDivElement>;
             this.#container = this.querySelector(".gh-column-parent")!;
+            this.#scrollContainer = this.querySelector(".gh-scroll-container")!;
             this.#tooltip = this.querySelector(
                 ".github-calendar-tooltip",
             )! as HTMLDivElement;
@@ -120,12 +121,14 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
                         this.#showTooltip(tile, tooltipContent);
                     }
                 });
-                tile.addEventListener("click", () => {
-                    if (this.#tooltipVisibleTile === tile) {
-                        this.#hideTooltip();
-                    } else {
-                        this.#showTooltip(tile, tooltipContent);
-                        window.addEventListener(
+                tile.addEventListener("click", (e) => {
+                    // Only show tooltip on click from touchscreens
+                    if (e.pointerType !== "touch") return;
+
+                    this.#showTooltip(tile, tooltipContent);
+                    // Hide on scroll
+                    [window, this.#scrollContainer!].forEach((el) => {
+                        el.addEventListener(
                             "scroll",
                             () => this.#hideTooltip(),
                             {
@@ -133,7 +136,22 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
                                 once: true,
                             },
                         );
-                    }
+                    });
+                    // Hide on click outside calendar
+                    window.setTimeout(() => {
+                        document.addEventListener(
+                            "click",
+                            (e) => {
+                                if (
+                                    e.target instanceof Node &&
+                                    !this.#container?.contains(e.target)
+                                ) {
+                                    this.#hideTooltip();
+                                }
+                            },
+                            { once: true },
+                        );
+                    }, 0);
                 });
 
                 currentDate.setTime(currentDate.getTime() + DAY_AS_MS);
@@ -147,7 +165,6 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
         }
 
         #showTooltip(tile: HTMLDivElement, content: string) {
-            this.#tooltipVisibleTile = tile;
             this.#tooltip!.textContent = content; // Set content
             // Get element widths
             const tileBox = tile.getBoundingClientRect();
@@ -163,17 +180,16 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
             // If tile is on screen, keep tooltip on screen.
             // If tile goes off screen, allow tooltop to clip off screen.
             if (left < padding) {
-                if (tileBox.left >= 0) left = padding;
-                else left = tileBox.left;
+                left = Math.min(tileBox.left, padding);
             } else if (left + tooltipBox.width + padding > htmlWidth) {
-                if (tileBox.right <= htmlWidth)
-                    left = htmlWidth - tooltipBox.width - padding;
-                else left = tileBox.right - tooltipBox.width;
+                left = Math.max(
+                    tileBox.right - tooltipBox.width,
+                    htmlWidth - padding - tooltipBox.width,
+                );
             }
             this.#tooltip!.style.left = `${left}px`;
             this.#tooltip!.style.top = `${tileBox.top - tooltipBox.height - padding}px`;
             // Position arrow
-            this.#tooltip!.dataset.arrow = "bottom";
             this.#tooltip!.style.setProperty(
                 "--arrow-x",
                 `${tileCenterX - left}px`,
@@ -181,7 +197,6 @@ const lastDay = contributionInfo.weeks.at(-1)?.at(-1);
         }
 
         #hideTooltip() {
-            this.#tooltipVisibleTile = null;
             this.#tooltip!.classList.add("opacity-0", "invisible"); // Hide
         }
     }
@@ -208,7 +223,11 @@ thus resulting in ~270 kB of savings.
 
     /* Non-empty calendar tiles */
     .gh-column-parent > div > :not(.empty-tile) {
-        @apply size-6 rounded-md border shadow-sm transition-transform ease-out hover:scale-125 hover:border-2;
+        @apply size-6 rounded-md border shadow-sm transition-transform ease-out;
+    }
+
+    .gh-column-parent > div > :not(.empty-tile):where(:hover) {
+        @apply scale-125 border-2;
     }
 
     .gh-column-parent .c4 {
@@ -232,6 +251,7 @@ thus resulting in ~270 kB of savings.
     }
 
     .github-calendar-tooltip {
+        &::before,
         &::after {
             content: "";
             position: absolute;
@@ -239,17 +259,15 @@ thus resulting in ~270 kB of savings.
             width: 0;
             height: 0;
             transform: translateX(-50%);
-            border: 6px solid transparent;
-        }
-
-        &[data-arrow="top"]::after {
-            border-bottom-color: var(--color-stone-600);
-            bottom: 100%;
-        }
-
-        &[data-arrow="bottom"]::after {
-            border-top-color: var(--color-stone-600);
             top: 100%;
+        }
+        &::before {
+            border: 6px solid transparent;
+            border-top-color: var(--color-stone-700);
+        }
+        &::after {
+            border: 4.5px solid transparent;
+            border-top-color: var(--color-stone-600);
         }
     }
 </style>
