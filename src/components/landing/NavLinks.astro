@@ -1,6 +1,13 @@
 ---
+import type { HTMLAttributes } from "astro/types";
+
+interface Link {
+    name: string;
+    href: string | null;
+    target?: HTMLAttributes<"a">["target"];
+}
 export interface Props {
-    headings: [string, string | null][];
+    headings: Link[];
     headingStyle: string;
 }
 
@@ -12,7 +19,7 @@ const { headings, headingStyle } = Astro.props;
         class="mx-auto flex w-full max-w-screen-xl flex-col gap-x-16 gap-y-4 sm:flex-row sm:flex-wrap sm:justify-between"
     >
         {
-            headings.map(([name, href]) => {
+            headings.map(({ name, href, target }) => {
                 return (
                     <a
                         href={href}
@@ -22,6 +29,7 @@ const { headings, headingStyle } = Astro.props;
                             "decoration-green-900 text-shadow-2xs text-shadow-green-900",
                             href === null && "cursor-not-allowed opacity-60",
                         ]}
+                        target={target}
                         data-highlight
                     >
                         {name}

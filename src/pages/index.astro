@@ -17,13 +17,14 @@ import Divider from "@/components/landing/Divider.astro";
 const headingStyle =
     "decoration-accent mb-4 text-3xl font-black underline decoration-4";
 
-const navLinks: [string, string | null][] = [
-    ["About me", "#about-me"],
-    ["Projects", "#projects"],
-    ["Blog", "#blog"],
-    ["Notes", "#notes"],
-    // ["Work experience", "#work-experience"],
-    // ["Other stuff", "#"],
+const navLinks = [
+    { name: "About me", href: "#about-me" },
+    { name: "Projects", href: "#projects" },
+    { name: "Blog", href: "#blog" },
+    { name: "Notes", href: "#notes" },
+    { name: "Résumé", href: "/resume.pdf", target: "_blank" },
+    // { name: "Work experience", href: "#work-experience" },
+    // { name: "Other stuff", href: "#" },
 ];
 ---
 
