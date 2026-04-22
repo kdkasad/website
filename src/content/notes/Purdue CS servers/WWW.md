@@ -63,7 +63,7 @@ RewriteRule "^forward$" "/homes/kkasad/forward/"
 RewriteRule "^forward/(.*)$" "http://data.cs.purdue.edu:20202/$1" [proxy]
 ```
 
-This will send requests for `https://cs.purdue.edu/homes/kkasad/forward/XXX` to
+This will send requests for `https://cs.purdue.edu/homes/kkasad/forward/XXX`
 to `http://data.cs.purdue.edu:20202/XXX`, where `XXX` is any sub-path.
 
 > [!NOTE]
