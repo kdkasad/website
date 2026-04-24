@@ -1,0 +1,35 @@
+---
+import TooltipProvider from "./TooltipProvider.astro";
+
+export interface Props {
+    date: Date;
+}
+
+const formatter = new Intl.RelativeTimeFormat("en-US");
+---
+
+<kk-relative-date
+    data-date={Astro.props.date.toISOString()}
+    data-tooltip={Astro.props.date.toUTCString()}></kk-relative-date>
+<TooltipProvider />
+
+<script>
+    import {
+        getRelativeTime,
+        getFormatterForStyle,
+    } from "@/lib/localizedDates";
+    class RelativeDateTimeElement extends HTMLElement {
+        static #formatter = new Intl.RelativeTimeFormat(undefined);
+
+        connectedCallback() {
+            const date = new Date(this.dataset.date!);
+            this.textContent = getRelativeTime(
+                RelativeDateTimeElement.#formatter,
+                date,
+            );
+            this.dataset.tooltip =
+                getFormatterForStyle("locale-long-time").format(date);
+        }
+    }
+    window.customElements.define("kk-relative-date", RelativeDateTimeElement);
+</script>

@@ -4,6 +4,7 @@ import CommonSEO from "@/components/CommonSEO.astro";
 import LocalizedDate from "@/components/LocalizedDate.astro";
 
 import { getSavedLinks, CURIUS_USER_ID, type SavedLink } from "@/lib/curius";
+import RelativeDateTime from "@/components/RelativeDateTime.astro";
 
 const links = await getSavedLinks(CURIUS_USER_ID);
 ---
@@ -74,9 +75,7 @@ const links = await getSavedLinks(CURIUS_USER_ID);
                                         {link.title}
                                     </a>
                                     <div class="text-secondary text-base">
-                                        Added{" "}
-                                        <LocalizedDate
-                                            style="locale-short"
+                                        <RelativeDateTime
                                             date={link.createdDate}
                                         />
                                     </div>

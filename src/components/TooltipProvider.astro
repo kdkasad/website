@@ -1,0 +1,101 @@
+{
+    /*
+    General tooltip provider.
+    Add data-tooltip="..." to elements to give them a tooltip.
+    */
+}
+
+<style is:global>
+    .global-tooltip {
+        &::before,
+        &::after {
+            content: "";
+            position: absolute;
+            left: var(--arrow-x);
+            width: 0;
+            height: 0;
+            transform: translateX(-50%);
+            top: 100%;
+        }
+        &::before {
+            border: 6px solid transparent;
+            border-top-color: var(--color-stone-700);
+        }
+        &::after {
+            border: 4.5px solid transparent;
+            border-top-color: var(--color-stone-600);
+        }
+    }
+</style>
+
+<script>
+    const padding = 12; // px
+
+    // Create tooltip element
+    const tooltip = document.createElement("div");
+    tooltip.className =
+        "global-tooltip text-background pointer-events-none invisible fixed max-w-sm rounded-md border border-stone-700 bg-stone-600 px-2 py-1 font-mono text-xs opacity-0 shadow-md transition-[opacity,visibility] duration-200 ease-out";
+    document.body.appendChild(tooltip);
+
+    function showTooltip(target: HTMLElement) {
+        if (!target.dataset.tooltip) return;
+        tooltip.textContent = target.dataset.tooltip; // Set content
+        tooltip.classList.remove("invisible", "opacity-0"); // Show
+
+        // Get element widths
+        const targetBox = target.getBoundingClientRect();
+        const htmlWidth = document.documentElement.clientWidth;
+        const tooltipBox = tooltip.getBoundingClientRect();
+
+        // Position tooltip
+        const targetCenterX = (targetBox.left + targetBox.right) / 2;
+        // Try above position
+        let left = targetCenterX - tooltipBox.width / 2;
+        let top = tooltipBox.top - tooltipBox.height - padding;
+        // TODO: try other positions if clipping off screen
+
+        // Adjust horizontally if clipping off screen
+        if (left - padding < 0) {
+            left = Math.min(targetBox.left, padding);
+        } else if (left + tooltipBox.width + padding > htmlWidth) {
+            left = Math.max(
+                targetBox.right - tooltipBox.width,
+                htmlWidth - padding - tooltipBox.width,
+            );
+        }
+
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${targetBox.top - tooltipBox.height - padding}px`;
+        // Position arrow
+        tooltip.style.setProperty("--arrow-x", `${targetCenterX - left}px`);
+    }
+
+    function hideTooltip() {
+        tooltip.classList.add("invisible", "opacity-0");
+    }
+
+    const targets = document.querySelectorAll<HTMLElement>("[data-tooltip]");
+    for (const target of targets) {
+        target.addEventListener("pointerenter", (e) => {
+            if (e.pointerType !== "touch") {
+                showTooltip(target);
+            }
+        });
+        target.addEventListener("pointerleave", (e) => {
+            if (e.pointerType !== "touch") {
+                hideTooltip();
+            }
+        });
+        target.addEventListener("click", (e) => {
+            if (e.pointerType === "touch") {
+                console.log("click", e);
+                showTooltip(target);
+                setTimeout(() => {
+                    document.addEventListener("click", () => hideTooltip(), {
+                        once: true,
+                    });
+                }, 0);
+            }
+        });
+    }
+</script>
