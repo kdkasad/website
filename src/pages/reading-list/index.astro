@@ -1,0 +1,98 @@
+---
+import AccentedTitleLayout from "@/layouts/AccentedTitleLayout.astro";
+import CommonSEO from "@/components/CommonSEO.astro";
+import LocalizedDate from "@/components/LocalizedDate.astro";
+
+import { getSavedLinks, CURIUS_USER_ID, type SavedLink } from "@/lib/curius";
+
+const links = await getSavedLinks(CURIUS_USER_ID);
+---
+
+<AccentedTitleLayout>
+    <CommonSEO
+        slot="head"
+        title="Kian's Reading List"
+        description="A collection of saved articles and my to-read list."
+    />
+
+    <div slot="title">
+        <div class="text-4xl font-black text-shadow-xs sm:text-6xl">
+            Reading List
+        </div>
+        <p class="mt-8">
+            My reading list. Retrieved from <a
+                rel="noopener"
+                target="_blank"
+                href="https://curius.app/kian-kasad"
+                class="underline decoration-1 hover:decoration-2">Curius</a
+            > daily.
+        </p>
+        <p class="mt-4">
+            Something being listed here does not necessarily mean I endorse it,
+            agree with it, encourage you to read it, etc. There certainly might
+            be great reads listed here, but the main purpose is for me to keep
+            track of things I want to read and/or may want to come back to
+            later.
+        </p>
+    </div>
+
+    <div
+        class="container mx-auto flex max-w-[75ch] flex-col gap-12 px-8 py-20 text-lg"
+    >
+        {
+            (
+                [
+                    ["To read", links.toRead],
+                    ["Finished", links.saved],
+                ] as [string, SavedLink[]][]
+            ).map(([heading, links]) => (
+                <div>
+                    <h2 class="mb-2 text-2xl font-black">{heading}</h2>
+                    <ul class="list-disc ps-8 *:my-2">
+                        {links
+                            .toSorted(
+                                (a, b) =>
+                                    a.createdDate.getTime() -
+                                    b.createdDate.getTime(),
+                            )
+                            .map((link) => (
+                                <li>
+                                    <a
+                                        rel="noopener"
+                                        target="_blank"
+                                        href={link.link}
+                                        class="decoration-accent underline decoration-2 hover:decoration-4"
+                                    >
+                                        {link.title}
+                                    </a>
+                                    <div class="text-secondary text-base">
+                                        Added{" "}
+                                        <LocalizedDate
+                                            style="locale-short"
+                                            date={link.createdDate}
+                                        />
+                                    </div>
+                                    {link.comments.length > 0 && (
+                                        <details class="text-base">
+                                            <summary class="cursor-pointer">
+                                                My comments
+                                            </summary>
+                                            <div class="border-secondary/50 border-l-2 ps-4 italic">
+                                                {link.comments[0].text
+                                                    .split("\n\n")
+                                                    .map((par) => (
+                                                        <p class="mt-2">
+                                                            {par}
+                                                        </p>
+                                                    ))}
+                                            </div>
+                                        </details>
+                                    )}
+                                </li>
+                            ))}
+                    </ul>
+                </div>
+            ))
+        }
+    </div>
+</AccentedTitleLayout>
