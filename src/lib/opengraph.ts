@@ -38,13 +38,16 @@ function h(
     };
 }
 
-export const GET: APIRoute<{ post: CollectionEntry<"blog" | "notes"> }> = ({
-    props: { post },
-}) => {
-    const isBlog = post.collection === "blog";
-
-    const formattedDate = isBlog
-        ? post.data.date.toLocaleDateString("en-US", {
+export const generateOGImage = (
+    title: string,
+    date?: Date,
+    description?: string,
+    author: { name: string; avatarUrl?: string } = {
+        name: "Kian Kasad",
+    },
+): Promise<Response> => {
+    const formattedDate = date
+        ? date.toLocaleDateString("en-US", {
               timeZone: "UTC",
               year: "numeric",
               month: "long",
@@ -87,10 +90,14 @@ export const GET: APIRoute<{ post: CollectionEntry<"blog" | "notes"> }> = ({
                     textShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
                     lineClamp: "3",
                 },
-                post.data.title,
+                title,
             ),
             h("div", { flex: "1" }),
-            h("div", { display: "flex", fontSize: "22px" }, formattedDate),
+            h(
+                "div",
+                { display: "flex", fontSize: "22px" },
+                date ? formattedDate : (description ?? ""),
+            ),
         ),
         h(
             "div",
@@ -113,7 +120,7 @@ export const GET: APIRoute<{ post: CollectionEntry<"blog" | "notes"> }> = ({
                     marginRight: "20px",
                     textShadow: "0 2px 3px rgba(0, 0, 0, 0.25)",
                 },
-                isBlog ? post.data.author : "Kian Kasad",
+                author.name,
             ),
             h(
                 "div",
@@ -129,7 +136,7 @@ export const GET: APIRoute<{ post: CollectionEntry<"blog" | "notes"> }> = ({
                 {
                     type: "img",
                     props: {
-                        src: avatarDataUrl,
+                        src: author.avatarUrl ?? avatarDataUrl,
                         width: 81,
                         height: 81,
                         style: { borderRadius: "50%" },
