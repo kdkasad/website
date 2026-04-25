@@ -13,6 +13,14 @@ const links = await getSavedLinks(CURIUS_USER_ID);
         slot="head"
         title="Kian's Reading List"
         description="A collection of saved articles and my to-read list."
+        image={{
+            url: new URL("./og.png", Astro.url),
+            type: "image/png",
+            width: 1200,
+            height: 630,
+            alt: "Simplified preview rendering of the page",
+            large: true,
+        }}
     />
 
     <div slot="title">

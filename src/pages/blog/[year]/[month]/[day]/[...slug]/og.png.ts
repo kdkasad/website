@@ -1,6 +1,7 @@
-import type { GetStaticPaths } from "astro";
-import { getCollection } from "astro:content";
+import type { APIRoute, GetStaticPaths } from "astro";
+import { getCollection, type CollectionEntry } from "astro:content";
 import { getBlogPostParams } from "@/lib/content";
+import { generateOGImage } from "@/lib/opengraph";
 
 export const getStaticPaths = (async () => {
     const posts = await getCollection("blog");
@@ -10,4 +11,9 @@ export const getStaticPaths = (async () => {
     }));
 }) satisfies GetStaticPaths;
 
-export { GET } from "@/lib/opengraph";
+export const GET: APIRoute<{ post: CollectionEntry<"blog"> }> = ({
+    props: { post },
+}) =>
+    generateOGImage(post.data.title, post.data.date, post.data.description, {
+        name: post.data.author,
+    });
