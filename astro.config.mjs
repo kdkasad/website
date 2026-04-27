@@ -45,4 +45,9 @@ export default defineConfig({
             rehypeGitHubStyleCallouts,
         ],
     },
+    // Prefetch next page on link hover
+    prefetch: {
+        prefetchAll: true,
+        defaultStrategy: "hover",
+    },
 });
