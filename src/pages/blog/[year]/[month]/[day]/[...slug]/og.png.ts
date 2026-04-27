@@ -14,6 +14,6 @@ export const getStaticPaths = (async () => {
 export const GET: APIRoute<{ post: CollectionEntry<"blog"> }> = ({
     props: { post },
 }) =>
-    generateOGImage(post.data.title, post.data.date, post.data.description, {
+    generateOGImage(post.data.title, post.data.date, undefined, {
         name: post.data.author,
     });

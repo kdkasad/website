@@ -1,0 +1,62 @@
+---
+import AccentedTitleLayout from "@/layouts/AccentedTitleLayout.astro";
+import CommonSEO from "@/components/CommonSEO.astro";
+import Prose from "@/components/bits/Prose.astro";
+import LocalizedDate from "@/components/LocalizedDate.astro";
+
+import { z } from "zod";
+
+export const FrontmatterSchema = z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.coerce.date(),
+});
+
+const { title, description, date } = FrontmatterSchema.parse(
+    Astro.props.frontmatter,
+);
+---
+
+<AccentedTitleLayout>
+    <CommonSEO
+        slot="head"
+        {title}
+        {description}
+        article={{ pubDate: date }}
+        image={{
+            url: new URL("./og.png", Astro.url),
+            width: 1200,
+            height: 630,
+            type: "image/png",
+            alt: "",
+            large: true,
+        }}
+    />
+
+    <div slot="title" class="*:not-first:mt-4">
+        {
+            Astro.url.pathname !== "/vim-week/" && (
+                <div>
+                    <a class="hover:underline" href="/vim-week/">
+                        &LeftArrow;&nbsp;&nbsp;Vim Week
+                    </a>
+                </div>
+            )
+        }
+        <div class="text-4xl font-black text-shadow-xs sm:text-6xl">
+            {title}
+        </div>
+        <div class="text-base">
+            <LocalizedDate {date} utc />
+        </div>
+        <div class="mt-8 flex flex-col gap-4">
+            {description.split("\n").map((par) => <p>{par}</p>)}
+        </div>
+    </div>
+
+    <Prose>
+        <div class="prose-headings:!no-underline pb-32">
+            <slot />
+        </div>
+    </Prose>
+</AccentedTitleLayout>

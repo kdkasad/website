@@ -12,7 +12,11 @@ const navItems: NavItem[] = [
 
 const boldNavItemPath = navItems
     .map(({ path }) => path)
-    .filter((path) => Astro.url.pathname.startsWith(path))
+    .filter((path) =>
+        path == "/"
+            ? Astro.url.pathname == path
+            : Astro.url.pathname.startsWith(path),
+    )
     .toSorted((a, b) => b.length - a.length)[0];
 ---
 

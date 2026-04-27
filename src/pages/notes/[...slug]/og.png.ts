@@ -12,4 +12,4 @@ export const getStaticPaths = (async () => {
 
 export const GET: APIRoute<{ note: CollectionEntry<"notes"> }> = ({
     props: { note },
-}) => generateOGImage(note.data.title);
+}) => generateOGImage(note.data.title, undefined, note.data.description);

@@ -3,6 +3,7 @@ import AccentedTitleLayout from "@/layouts/AccentedTitleLayout.astro";
 import BlogPostTOC from "@/components/BlogPostTOC.astro";
 import LocalizedDate from "@/components/LocalizedDate.astro";
 import CommonSEO from "@/components/CommonSEO.astro";
+import Prose from "@/components/bits/Prose.astro";
 
 import { getBlogPostPath } from "@/lib/content";
 import { type CollectionEntry, getCollection, render } from "astro:content";
@@ -89,16 +90,14 @@ function getPostPath(post: CollectionEntry<"blog" | "notes">): string {
         }
     </div>
 
-    <div
-        class="prose sm:prose-lg prose-stone prose-headings:underline prose-headings:decoration-accent prose-headings:decoration-4 prose-headings:tracking-tight prose-h1:decoration-6 prose-h1:mt-12 prose-h1:mb-4 prose-a:decoration-accent prose-a:decoration-2 prose-a:hover:decoration-3 prose-code:before:content-none prose-code:after:content-none text-primary mx-auto mt-12 w-full max-w-[75ch] px-8 wrap-break-word sm:leading-normal lg:mt-16 [&>section.footnotes]:mt-16 [&>section.footnotes]:border-t [&>section.footnotes]:pt-12"
-    >
+    <Prose>
         {
             isBlog && post.data.toc !== "none" && headings.length > 0 && (
                 <BlogPostTOC open={post.data.toc === "expand"} {headings} />
             )
         }
         <Content />
-    </div>
+    </Prose>
 
     {/* Previous/next post links */}
     <div class="bg-accent text-background mt-16 w-full p-8 shadow-lg">

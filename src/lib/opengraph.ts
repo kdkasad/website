@@ -24,16 +24,17 @@ function h(
     style: Record<string, string | number>,
     ...children: unknown[]
 ) {
+    const filteredChildren = children.filter(Boolean);
     return {
         type,
         props: {
             style,
             children:
-                children.length === 0
+                filteredChildren.length === 0
                     ? undefined
-                    : children.length === 1
-                      ? children[0]
-                      : children,
+                    : filteredChildren.length === 1
+                      ? filteredChildren[0]
+                      : filteredChildren,
         },
     };
 }
@@ -46,14 +47,14 @@ export const generateOGImage = (
         name: "Kian Kasad",
     },
 ): Promise<Response> => {
-    const formattedDate = date
-        ? date.toLocaleDateString("en-US", {
-              timeZone: "UTC",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-          })
-        : "";
+    const formattedDate =
+        date &&
+        date.toLocaleDateString("en-US", {
+            timeZone: "UTC",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
 
     const template = h(
         "div",
@@ -77,8 +78,9 @@ export const generateOGImage = (
                 display: "flex",
                 flexDirection: "column",
                 gap: "18px",
+                fontSize: "22px",
             },
-            h("div", { display: "flex", fontSize: "20px" }, "kasad.com"),
+            h("div", { display: "flex" }, "kasad.com"),
             h("div", { flex: "1" }),
             h(
                 "div",
@@ -88,16 +90,15 @@ export const generateOGImage = (
                     fontWeight: "900",
                     lineHeight: "1.1",
                     textShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
-                    lineClamp: "3",
+                    lineClamp: formattedDate && description ? 2 : 3,
                 },
                 title,
             ),
             h("div", { flex: "1" }),
-            h(
-                "div",
-                { display: "flex", fontSize: "22px" },
-                date ? formattedDate : (description ?? ""),
-            ),
+            description &&
+                h("div", { display: "block", lineClamp: 2 }, description),
+            formattedDate && description && h("div", { flex: "1" }),
+            formattedDate && h("div", { display: "flex" }, formattedDate),
         ),
         h(
             "div",

@@ -3,7 +3,7 @@ import type { APIRoute } from "astro";
 
 export const GET: APIRoute = () =>
     generateOGImage(
-        "Reading\nlist",
+        "Reading list",
         undefined,
         "A collection of saved articles and my to-read list.",
     );
