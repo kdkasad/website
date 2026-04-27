@@ -15,12 +15,16 @@ export const FrontmatterSchema = z.object({
 const { title, description, date } = FrontmatterSchema.parse(
     Astro.props.frontmatter,
 );
+
+// Whether this is the root Vim Week page
+const isRoot = Astro.url.pathname === "/vim-week/";
 ---
 
 <AccentedTitleLayout>
     <CommonSEO
         slot="head"
         {title}
+        titleTemplate={isRoot ? undefined : "%s | Vim Week | Kian Kasad"}
         {description}
         article={{ pubDate: date }}
         image={{
@@ -35,7 +39,7 @@ const { title, description, date } = FrontmatterSchema.parse(
 
     <div slot="title" class="*:not-first:mt-4">
         {
-            Astro.url.pathname !== "/vim-week/" && (
+            !isRoot && (
                 <div>
                     <a class="hover:underline" href="/vim-week/">
                         &LeftArrow;&nbsp;&nbsp;Vim Week
