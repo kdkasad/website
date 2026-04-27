@@ -10,7 +10,7 @@ const parser = unified().use(rehypeParse);
 
 function expect<T>(arg: T | null | undefined, msg: string): T {
     if (arg === null || arg === undefined) {
-        throw new Error("msg");
+        throw new Error(msg);
     }
     return arg;
 }
