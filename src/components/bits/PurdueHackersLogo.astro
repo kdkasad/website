@@ -1,0 +1,27 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { twMerge } from "tailwind-merge";
+
+const COLOR_CLASS = "bg-[#FCD202]";
+
+export type Props = HTMLAttributes<"div">;
+
+const { class: className, ...restProps } = Astro.props;
+---
+
+<div
+    class={twMerge("grid grid-cols-3 *:aspect-square", className)}
+    role="img"
+    aria-label="Purdue Hackers logo"
+    {...restProps}
+>
+    <div></div>
+    <div class={COLOR_CLASS}></div>
+    <div></div>
+    <div></div>
+    <div class={COLOR_CLASS}></div>
+    <div class={COLOR_CLASS}></div>
+    <div class={COLOR_CLASS}></div>
+    <div></div>
+    <div class={COLOR_CLASS}></div>
+</div>
