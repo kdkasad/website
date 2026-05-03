@@ -1,0 +1,19 @@
+---
+import PurdueHackersLogo from "@/components/bits/PurdueHackersLogo.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { Icon } from "astro-icon/components";
+---
+
+<BaseLayout>
+    <div class="flex min-h-dvh w-full flex-col items-center bg-[#FBF7EC]">
+        <div class="p-8 text-lg">
+            <Icon name="fa7-solid:mouse-pointer" class="inline size-6" />
+            Hover the logo
+        </div>
+        <div class="flex flex-1 flex-col items-center justify-center">
+            <PurdueHackersLogo
+                class="size-64 drop-shadow-lg *:transition-colors *:duration-200 *:ease-out *:hover:bg-[#7D3BFF]"
+            />
+        </div>
+    </div>
+</BaseLayout>

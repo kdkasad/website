@@ -2,8 +2,6 @@
 import type { HTMLAttributes } from "astro/types";
 import { twMerge } from "tailwind-merge";
 
-const COLOR_CLASS = "bg-[#FCD202]";
-
 export type Props = HTMLAttributes<"div">;
 
 const { class: className, ...restProps } = Astro.props;
@@ -15,13 +13,13 @@ const { class: className, ...restProps } = Astro.props;
     aria-label="Purdue Hackers logo"
     {...restProps}
 >
-    <div></div>
-    <div class={COLOR_CLASS}></div>
-    <div></div>
-    <div></div>
-    <div class={COLOR_CLASS}></div>
-    <div class={COLOR_CLASS}></div>
-    <div class={COLOR_CLASS}></div>
-    <div></div>
-    <div class={COLOR_CLASS}></div>
+    <div class="invisible"></div>
+    <div class="bg-[#FCD202]"></div>
+    <div class="invisible"></div>
+    <div class="invisible"></div>
+    <div class="bg-[#FCD202]"></div>
+    <div class="bg-[#FCD202]"></div>
+    <div class="bg-[#FCD202]"></div>
+    <div class="invisible"></div>
+    <div class="bg-[#FCD202]"></div>
 </div>
