@@ -56,7 +56,7 @@ const links = await getSavedLinks(CURIUS_USER_ID);
             ).map(([heading, links]) => (
                 <div>
                     <h2 class="mb-2 text-2xl font-black">{heading}</h2>
-                    <ul class="list-disc ps-8 *:my-2">
+                    <ul class="marker:text-accent list-disc ps-8 *:my-2">
                         {links
                             .toSorted(
                                 (a, b) =>
@@ -69,7 +69,7 @@ const links = await getSavedLinks(CURIUS_USER_ID);
                                         rel="noopener"
                                         target="_blank"
                                         href={link.link}
-                                        class="decoration-accent underline decoration-2 hover:decoration-4"
+                                        class="decoration-accent decoration-2 hover:underline"
                                     >
                                         {link.title}
                                     </a>
