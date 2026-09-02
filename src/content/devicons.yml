@@ -88,3 +88,19 @@ chartjs:
 raspberrypi:
     name: Raspberry Pi
     url: https://raspberrypi.com
+
+typescript:
+    name: TypeScript
+    url: https://www.typescriptlang.org/
+
+discordjs:
+    name: Discord.js
+    url: https://discordjs.guide
+
+bun:
+    name: Bun
+    url: https://bun.com
+
+sqlite:
+    name: SQLite3
+    url: https://sqlite.org
