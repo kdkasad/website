@@ -22,7 +22,8 @@ Ok, this one is not a tool, but it fits the theme.
 
 I recommend working on one of the mcNN.cs.purdue.edu servers (at the time of
 writing, 18–21 exist). They seem faster than data.cs (unsure why but probably
-because of NFS load). They also have more generous default resource limits.
+because of NFS load). They also have more generous default resource limits,
+e.g. the process count limit on data.cs is 512 but on mc21.cs is 2048.
 
 Since most courses use data.cs for grading, compile and run your code there
 before submitting just to make sure it works as expected. I've never had a
@@ -93,6 +94,15 @@ If the starter code produces tons of warnings, remove `-Wpedantic` and repeat.
 If there are still too many warnings from the starter code, remove `-Wextra`.
 However I suggest not removing `-Wall`;
 if there are warnings with just `-Wall`, either ignore them or fix them.
+
+When writing your code, don't ignore the warnings that come up. Your goal should
+be to have 0 warnings in the code you add to the project. If you're able to
+compile the starter code with no warnings, consider adding `-Werror` so that
+warnings are treated like errors, which will prevent you from being able to
+ignore them if they come up.
+
+If you're using good editor integration such as clangd (mentioned above), you
+should see warnings/errors in your editor as you're writing the code.
 
 # Sanitizers
 
