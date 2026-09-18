@@ -16,6 +16,15 @@ much easier.
 > for editor integration, you should write code without it so you remember
 > functions and their signatures, as you'll need to know them for the exams.
 
+# Version control
+
+Use it, no exceptions. It might feel like useless extra work until it saves you.
+The moment you need to make use of it is the moment it becomes too late to start
+using it.
+
+I like to make one commit per step/part of an assignment. The more granular your
+commits can be, the easier it is to manage the history of your code.
+
 # Servers
 
 Ok, this one is not a tool, but it fits the theme.
@@ -30,14 +39,14 @@ before submitting just to make sure it works as expected. I've never had a
 situation where I wrote something on mcNN and it didn't work as expected on data
 (aside from when using sanitizers, as will be explained later).
 
-# Version control
+## SSH keys
 
-Use it, no exceptions. It might feel like useless extra work until it saves you.
-The moment you need to make use of it is the moment it becomes too late to start
-using it.
+If you haven't set up SSH keys to allow yourself to log in to the CS servers
+without having to enter your password, you should do that.
+It takes two commands and can be done in under a minute.
 
-I like to make one commit per step/part of an assignment. The more granular your
-commits can be, the easier it is to manage the history of your code.
+There are plenty of tutorials online (including some by Purdue CS), so I won't
+repeat that here.
 
 # Clangd (editor integration)
 
