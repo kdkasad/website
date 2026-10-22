@@ -1,9 +1,10 @@
 // @ts-check
 import { defineConfig, envField } from "astro/config";
+import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import icon from "astro-icon";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import { rehypeHeadingIds } from "@astrojs/markdown-remark";
+import { rehypeHeadingIds, unified } from "@astrojs/markdown-remark";
 import { rehypeGitHubStyleCallouts } from "@/lib/custom-markdown";
 import mdx from "@astrojs/mdx";
 
@@ -14,6 +15,8 @@ if (!baseUrl) throw new Error("BASE_URL is not set");
 export default defineConfig({
     site: baseUrl,
     trailingSlash: "always",
+    // Preserve HTML-aware whitespace handling from Astro 6.
+    compressHTML: true,
     env: {
         // Defines the schema for environment variables
         schema: {
@@ -33,17 +36,27 @@ export default defineConfig({
     },
     vite: {
         plugins: [tailwindcss()],
+        resolve: {
+            alias: {
+                "@": fileURLToPath(new URL("./src", import.meta.url)),
+            },
+        },
     },
     integrations: [icon(), mdx()],
     markdown: {
-        rehypePlugins: [
-            rehypeHeadingIds,
-            [
-                rehypeAutolinkHeadings,
-                { behavior: "wrap", properties: { className: "not-prose" } },
+        processor: unified({
+            rehypePlugins: [
+                rehypeHeadingIds,
+                [
+                    rehypeAutolinkHeadings,
+                    {
+                        behavior: "wrap",
+                        properties: { className: "not-prose" },
+                    },
+                ],
+                rehypeGitHubStyleCallouts,
             ],
-            rehypeGitHubStyleCallouts,
-        ],
+        }),
     },
     // Prefetch next page on link hover
     prefetch: {

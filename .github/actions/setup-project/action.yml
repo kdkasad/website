@@ -25,5 +25,7 @@ runs:
         path: ~/.bun/install/cache
 
     - name: Install dependencies
-      run: bun install --frozen-lockfile ${{ inputs.dev != 'true' && '--production' || '' }}
+      run: |
+        bun install --frozen-lockfile ${{ inputs.dev != 'true' && '--production' || '' }}
+        (cd redirect-compiler && bun install --frozen-lockfile ${{ inputs.dev != 'true' && '--production' || '' }})
       shell: sh
