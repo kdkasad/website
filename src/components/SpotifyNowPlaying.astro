@@ -1,0 +1,47 @@
+---
+import { getNowPlaying, type NowPlaying } from "@/lib/spotify";
+
+let data: NowPlaying | undefined = undefined;
+try {
+    data = await getNowPlaying();
+} catch {}
+
+let imageUrl: string | undefined = undefined;
+if (data && data.item) {
+    const images =
+        data.item.type === "track" ? data.item.album.images : data.item.images;
+    if (data.item.type === "track") {
+        images.sort((a, b) => a.width - b.width);
+        imageUrl = images[0]?.url;
+    }
+}
+
+let artistsOrShow: string | undefined = undefined;
+if (data?.item?.type === "track" && data.item.artists.length > 0) {
+    artistsOrShow = data.item.artists.map((a) => a.name).join(", ");
+} else if (data?.item?.type === "episode") {
+    artistsOrShow = data.item.show.name;
+}
+---
+
+<div
+    class="max-w-full overflow-hidden px-4 text-ellipsis whitespace-nowrap sm:px-8"
+>
+    {
+        data?.item && (
+            <>
+                <span>Currently listening to:</span>
+                {imageUrl && (
+                    <img
+                        src={imageUrl}
+                        class="inline h-6 rounded-sm align-middle"
+                    />
+                )}
+                <span class="font-medium">
+                    {data.item.name}
+                    {artistsOrShow && ` (${artistsOrShow})`}
+                </span>
+            </>
+        )
+    }
+</div>

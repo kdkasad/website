@@ -13,6 +13,7 @@ import CommonSEO from "@/components/CommonSEO.astro";
 import BlogTeaser from "@/components/landing/BlogTeaser.astro";
 import NotesTeaser from "@/components/landing/NotesTeaser.astro";
 import Divider from "@/components/landing/Divider.astro";
+import SpotifyNowPlaying from "@/components/SpotifyNowPlaying.astro";
 
 const headingStyle =
     "decoration-accent mb-4 text-3xl font-black underline decoration-4";
@@ -84,8 +85,12 @@ const navLinks = [
             <GitHubContributions />
         </section>
 
-        {/* Heading links */}
-        <NavLinks headings={navLinks} {headingStyle} />
+        <div class="mt-16 xl:mt-0">
+            <SpotifyNowPlaying server:defer />
+
+            {/* Heading links */}
+            <NavLinks headings={navLinks} {headingStyle} />
+        </div>
     </div>
 
     <ProjectsSection {headingStyle} />
