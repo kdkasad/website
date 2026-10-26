@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 
 interface ContactIconEntry {
+    id?: string;
     url: string;
     icon: string;
     alt: string;
@@ -10,7 +11,8 @@ interface ContactIconEntry {
 
 const entries: ContactIconEntry[] = [
     {
-        url: "mailto:kian@kasad.com",
+        id: "email-icon-link",
+        url: "#",
         icon: "fa7-solid:envelope",
         alt: "Email",
         title: "Send Kian an email",
@@ -40,6 +42,7 @@ const entries: ContactIconEntry[] = [
     {
         entries.map((entry) => (
             <a
+                id={entry.id}
                 href={entry.url}
                 title={entry.title}
                 target="_blank"
@@ -50,3 +53,14 @@ const entries: ContactIconEntry[] = [
         ))
     }
 </div>
+
+<script>
+    const setEmail = () => {
+        const el = document.getElementById(
+            "email-icon-link",
+        ) as HTMLAnchorElement | null;
+        if (el) el.href = "mailto:" + "kian" + "@" + window.location.hostname;
+    };
+    document.addEventListener("mousemove", setEmail, { once: true });
+    document.addEventListener("touchstart", setEmail, { once: true });
+</script>

@@ -59,6 +59,11 @@ async function fetchContributions(username: string, from: Date, to: Date) {
             variables: { username, from, to },
         }),
     });
+    if (!response.ok) {
+        throw new Error(
+            `Error response from GitHub API (${response.status} ${response.statusText}): ${await response.text()}`,
+        );
+    }
     return ApiResponseSchema.parse(await response.json()).data.user
         .contributionsCollection.contributionCalendar;
 }
