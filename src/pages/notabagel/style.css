@@ -5,13 +5,19 @@ body {
     height: 100%;
     width: 100%;
     overflow: hidden;
-    display: grid;
-    place-content: center;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
 img {
+    width: 200%;
+    flex: 1 0 auto;
     scale: 0%;
-    animation: zoom 300s ease-in 0s alternate infinite;
 }
 
 @keyframes zoom {

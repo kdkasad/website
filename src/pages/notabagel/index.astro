@@ -1,0 +1,33 @@
+---
+import { z } from "zod";
+import "./style.css";
+
+export const prerender = false;
+
+const ParamsSchema = z.object({
+    img: z.string().optional(),
+    title: z.string().default("not a bagel"),
+    duration: z.coerce.number().default(300),
+    delay: z.coerce.number().default(30),
+});
+const params = ParamsSchema.parse(
+    Object.fromEntries(Astro.url.searchParams.entries()),
+);
+---
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{params.title}</title>
+    </head>
+
+    <body>
+        <img
+            src={params.img}
+            style={{
+                animation: `zoom ${params.duration}s ease-in-out ${params.delay}s alternate infinite`,
+            }}
+        />
+    </body>
+</html>
