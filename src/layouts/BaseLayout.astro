@@ -17,6 +17,12 @@ const { extraBodyClasses = "" } = Astro.props;
         <meta name="viewport" content="width=device-width" />
         <meta name="generator" content={Astro.generator} />
         <link rel="icon" href="/assets/laptoppfp2-offwhite-circle-small.png" />
+        <link
+            rel="alternate"
+            type="application/rss+xml"
+            href="/blog/feed.xml"
+            title="Blog RSS feed"
+        />
         <UmamiTracker />
         <slot name="head" />
     </head>

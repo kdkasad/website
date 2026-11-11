@@ -30,21 +30,7 @@ const sortedYears = Array.from(postsByYear.keys()).toSorted((a, b) => b - a);
 ---
 
 <AccentedTitleLayout>
-    <CommonSEO
-        title="Blog"
-        description={DESCRIPTION}
-        cardTitle="Kian's blog"
-        extend={{
-            link: [
-                {
-                    rel: "alternate",
-                    type: "application/rss+xml",
-                    title: "Kian's blog",
-                    href: "feed.xml",
-                },
-            ],
-        }}
-    />
+    <CommonSEO title="Blog" description={DESCRIPTION} cardTitle="Kian's blog" />
 
     <div slot="title">
         <div class="text-6xl font-black text-shadow-xs">Blog</div>
