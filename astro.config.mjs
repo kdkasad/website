@@ -74,10 +74,13 @@ export default defineConfig({
                 "@": fileURLToPath(new URL("./src", import.meta.url)),
             },
         },
-        ssr: {
-            noExternal: true,
-            external: ["sharp"],
-        },
+        ssr:
+            process.env.NODE_ENV === "production"
+                ? {
+                      noExternal: true,
+                      external: ["sharp"],
+                  }
+                : {},
     },
 
     integrations: [icon(), mdx()],
