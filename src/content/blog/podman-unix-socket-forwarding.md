@@ -238,6 +238,9 @@ to create and bind to the UNIX domain socket.
 [Unit]
 Description=Socket for vw-proxy.container
 
+# See explanation of this line below
+BindsTo=vaultwarden-pod.service
+
 [Socket]
 # %h = home directory
 ListenStream=%h/vaultwarden.sock
@@ -248,6 +251,12 @@ Note the `ExecStartPost=` command;
 this runs after systemd has created the socket file.
 `setfacl -m g:caddy:rw <file>` will set an [ACL] that allows the `caddy` group
 to read and write the socket file.
+
+The `BindsTo=vaultwarden-pod.service` line tells systemd to stop this socket
+unit when `vaultwarden-pod.service` stops. If you don't have this, systemd will
+listen on the socket even when your service is down, and will start the service
+when it receives a connection. This may be what you want; if so, just remove
+this setting.
 
 [ACL]: https://man.archlinux.org/man/core/acl/acl.5.en
 
